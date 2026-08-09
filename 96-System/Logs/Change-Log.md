@@ -23,3 +23,6 @@
 | 2026-08-09 13:40:41 +08:00 | 阶段 4 | 创建 6 组自有 Cleaner 测试样本 | `96-System/Audits/Stage-4-Research-Cleaner-Test` | 覆盖中文、英文、代码、表格、图片和标题层级 | 输入与输出已创建，结果待验证 | 使用 Git revert 撤销阶段 4 提交 |
 | 2026-08-09 13:40:41 +08:00 | 阶段 4 | 追加 ADR-009、ADR-010 并更新状态 | ADR、Build State、Change Log | 建立阶段治理闭环 | 已写入，待最终测试 | 使用 Git revert 撤销阶段 4 提交 |
 | 2026-08-09 13:42:14 +08:00 | 阶段 4 | 完成 6 组 Research Cleaner 规则测试 | `96-System/Audits/Stage-4-Research-Cleaner-Test` | 验证格式清理的信息无损和保护区规则 | 6/6 通过；信息丢失 0；来源失败 0；保护区失败 0；单文件人工试运行 VERIFIED；批量 BLOCKED | 使用 Git revert 撤销阶段 4 提交 |
+| 2026-08-09 13:49:21 +08:00 | 阶段 5 | 创建 Topic 治理规则 | `96-System/Config/Topic Governance.md` | 定义数据支持、评分、同义词、Hub、Index、链接和退役规则 | 文件已创建；未创建空 Hub | 使用 Git revert 撤销阶段 5 提交 |
+| 2026-08-09 13:49:21 +08:00 | 阶段 5 | 完成 Research 试点准入评估 | `96-System/Audits/2026-08-09 - Stage 5 Research Pilot Assessment.md` | 记录无真实 Research 的阻塞，防止虚构候选 | Research 0；候选 Topic 0；试点 BLOCKED | 使用 Git revert 撤销阶段 5 提交 |
+| 2026-08-09 13:49:21 +08:00 | 阶段 5 | 追加 ADR-011、ADR-012 并更新状态 | ADR、Build State、Change Log | 区分规则完成与试点完成 | 未创建 `07-Topics`、Topic Index 或 Hub | 使用 Git revert 撤销阶段 5 提交 |
