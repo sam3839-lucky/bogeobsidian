@@ -18,3 +18,8 @@
 | 2026-08-09 13:24:43 +08:00 | 阶段 3 | 创建受控测试审计 | `96-System/Audits/2026-08-09 - Stage 3 Template Validation.md` | 以真实审计记录保存验证证据，避免临时伪知识 | 状态暂为 NOT_CHECKED | 使用 Git revert 撤销阶段 3 提交 |
 | 2026-08-09 13:24:43 +08:00 | 阶段 3 | 追加架构决策并更新状态 | ADR-007、ADR-008、Build State、Change Log | 建立阶段治理闭环 | 文件已更新，待最终验证 | 使用 Git revert 撤销阶段 3 提交 |
 | 2026-08-09 13:26:10 +08:00 | 阶段 3 | 完成 YAML、链接、ID、插件语法与文件名验证 | `96-System/Audits/2026-08-09 - Stage 3 Template Validation.md` | 验证规范和模板可用性 | YAML 12/12；链接 14/14；重复 ID 0；插件语法 0；非法文件名 0 | 使用 Git revert 撤销阶段 3 提交 |
+| 2026-08-09 13:40:41 +08:00 | 阶段 4 | 建立资料导入、Triage、收集与 Cleaner 规范 | `96-System/Guides` 下 4 个文件 | 固化可回滚、信息无损的研究工作流 | 文件已创建，待测试 | 使用 Git revert 撤销阶段 4 提交 |
+| 2026-08-09 13:40:41 +08:00 | 阶段 4 | 建立研究分类规则 | `96-System/Config/Research Classification Rules.md` | 统一领域、去向、Topic、链接与置信度建议 | 文件已创建，待测试 | 使用 Git revert 撤销阶段 4 提交 |
+| 2026-08-09 13:40:41 +08:00 | 阶段 4 | 创建 6 组自有 Cleaner 测试样本 | `96-System/Audits/Stage-4-Research-Cleaner-Test` | 覆盖中文、英文、代码、表格、图片和标题层级 | 输入与输出已创建，结果待验证 | 使用 Git revert 撤销阶段 4 提交 |
+| 2026-08-09 13:40:41 +08:00 | 阶段 4 | 追加 ADR-009、ADR-010 并更新状态 | ADR、Build State、Change Log | 建立阶段治理闭环 | 已写入，待最终测试 | 使用 Git revert 撤销阶段 4 提交 |
+| 2026-08-09 13:42:14 +08:00 | 阶段 4 | 完成 6 组 Research Cleaner 规则测试 | `96-System/Audits/Stage-4-Research-Cleaner-Test` | 验证格式清理的信息无损和保护区规则 | 6/6 通过；信息丢失 0；来源失败 0；保护区失败 0；单文件人工试运行 VERIFIED；批量 BLOCKED | 使用 Git revert 撤销阶段 4 提交 |
