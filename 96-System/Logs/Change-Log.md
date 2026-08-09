@@ -9,3 +9,7 @@
 | 2026-08-09 12:48:51 +08:00 | Git 安全基线补充 | 初始化本地仓库并创建基线提交 | `.git` 与 9 个纳管文件 | 建立版本回滚能力 | 分支 `main`；提交 `a65ec033726eb644fdc22d7039b10c95e6b396c3`；工作区提交前为干净 | 如需移除 Git 元数据须另行确认；文件级恢复可使用阶段 1 ZIP |
 | 2026-08-09 12:48:51 +08:00 | Git 安全基线补充 | 配置私有仓库远端并尝试首次 Push | `origin` → `https://github.com/sam3839-lucky/bogeobsidian` | 关联用户提供的 GitHub 私有仓库 | origin 已配置；Push 因连接重置失败；复核因低速超时失败；未 Force Push | 可移除 origin 撤销远端配置，但须另行确认 |
 | 2026-08-09 13:01:04 +08:00 | Git 安全基线补充 | 首次 Push 成功并验证远端同步 | `main` → `origin/main` | 建立 GitHub 私有远端备份 | 本地、上游和远端均为 `6cea82b8d142031edd8e91709e252e9119b00e76`；未 Force Push；全局代理配置未修改 | 本地保留完整历史；如需撤销远端提交须另行评估，不自动改写远端 |
+| 2026-08-09 13:09:48 +08:00 | 阶段 2 | 创建知识库架构指南 | `96-System/Guides/Knowledge Base Architecture.md` | 记录实际结构、目标结构和按需启用条件 | 文件存在且可读取；未创建空业务目录 | 使用 Git revert 撤销本阶段提交，或从阶段 1 快照恢复 |
+| 2026-08-09 13:09:48 +08:00 | 阶段 2 | 创建目录职责规范 | `96-System/Config/Folder Responsibilities.md` | 明确每个目标目录的进入、流转与归档边界 | 所有目标目录均有职责说明 | 使用 Git revert 撤销本阶段提交 |
+| 2026-08-09 13:09:48 +08:00 | 阶段 2 | 追加架构决策 | `96-System/Config/Architecture Decisions.md` | 固化按需建目录、单一主位置和 Topic 关联原则 | ADR-005、ADR-006 存在 | 使用 Git revert 撤销本阶段提交 |
+| 2026-08-09 13:09:48 +08:00 | 阶段 2 | 更新执行状态 | `96-System/Logs/Build-State.md`、`96-System/Logs/Change-Log.md` | 建立阶段闭环记录 | 两个文件存在且可读取 | 使用 Git revert 撤销本阶段提交 |
