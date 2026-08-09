@@ -13,3 +13,8 @@
 | 2026-08-09 13:09:48 +08:00 | 阶段 2 | 创建目录职责规范 | `96-System/Config/Folder Responsibilities.md` | 明确每个目标目录的进入、流转与归档边界 | 所有目标目录均有职责说明 | 使用 Git revert 撤销本阶段提交 |
 | 2026-08-09 13:09:48 +08:00 | 阶段 2 | 追加架构决策 | `96-System/Config/Architecture Decisions.md` | 固化按需建目录、单一主位置和 Topic 关联原则 | ADR-005、ADR-006 存在 | 使用 Git revert 撤销本阶段提交 |
 | 2026-08-09 13:09:48 +08:00 | 阶段 2 | 更新执行状态 | `96-System/Logs/Build-State.md`、`96-System/Logs/Change-Log.md` | 建立阶段闭环记录 | 两个文件存在且可读取 | 使用 Git revert 撤销本阶段提交 |
+| 2026-08-09 13:24:43 +08:00 | 阶段 3 | 建立元数据、命名与标签规范 | `96-System/Config` 下 3 个规范文件 | 统一 Properties 与受控值 | 文件已创建，待解析验证 | 使用 Git revert 撤销阶段 3 提交 |
+| 2026-08-09 13:24:43 +08:00 | 阶段 3 | 创建 11 个无插件核心模板 | `90-Templates` | 提供一致且可复制的笔记起点 | 文件已创建，待 YAML、命名与插件语法验证 | 使用 Git revert 撤销阶段 3 提交 |
+| 2026-08-09 13:24:43 +08:00 | 阶段 3 | 创建受控测试审计 | `96-System/Audits/2026-08-09 - Stage 3 Template Validation.md` | 以真实审计记录保存验证证据，避免临时伪知识 | 状态暂为 NOT_CHECKED | 使用 Git revert 撤销阶段 3 提交 |
+| 2026-08-09 13:24:43 +08:00 | 阶段 3 | 追加架构决策并更新状态 | ADR-007、ADR-008、Build State、Change Log | 建立阶段治理闭环 | 文件已更新，待最终验证 | 使用 Git revert 撤销阶段 3 提交 |
+| 2026-08-09 13:26:10 +08:00 | 阶段 3 | 完成 YAML、链接、ID、插件语法与文件名验证 | `96-System/Audits/2026-08-09 - Stage 3 Template Validation.md` | 验证规范和模板可用性 | YAML 12/12；链接 14/14；重复 ID 0；插件语法 0；非法文件名 0 | 使用 Git revert 撤销阶段 3 提交 |

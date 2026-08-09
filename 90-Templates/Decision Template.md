@@ -1,0 +1,29 @@
+---
+id: "" # 必填；格式见 Metadata Schema
+type: "decision" # 必填；受控值
+title: "" # 必填
+status: "proposed" # 必填；须符合 type/status 兼容表
+created: "" # 必填；YYYY-MM-DD
+updated: "" # 可选；YYYY-MM-DD
+domain: "" # 可选
+topics: [] # 可选；主题名称列表
+tags: [] # 可选；仅使用 Tag Taxonomy
+source: "" # 可选或条件必填
+source_url: "" # 可选；完整 http/https URL
+author: "" # 可选；仅在已知时填写
+published_at: "" # 可选；YYYY-MM-DD
+confidence: "" # 可选
+aliases: [] # 可选
+related: [] # 可选；内部链接字符串列表
+---
+# 决策主题
+
+## 背景
+
+## 决策
+
+## 备选方案
+
+## 影响
+
+## 复审条件
