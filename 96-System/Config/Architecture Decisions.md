@@ -30,3 +30,4 @@
 - 背景：Vault 需要版本回滚能力，用户提供私有仓库 `https://github.com/sam3839-lucky/bogeobsidian`；设备工作区状态及凭据不应进入版本历史。
 - 决策：使用 `main` 分支和 `origin` 私有远端；跟踪可复用的 Obsidian 配置与知识文件，忽略 `workspace.json`、缓存、回收站、临时文件及常见凭据文件。
 - 影响：插件 `data.json` 默认不纳管，避免意外提交插件令牌，但部分插件个性化设置不会随 Git 同步。禁止 Force Push；远端已有历史时必须先审查再决定整合方式。
+- 实施结果：首次 Push 已通过 Clash Verge 一次性代理完成；代理未写入 Git 全局配置；验证提交为 `6cea82b8d142031edd8e91709e252e9119b00e76`。
