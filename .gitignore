@@ -1,0 +1,21 @@
+# Obsidian device/session state
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache/
+.obsidian/plugins/*/data.json
+
+# Obsidian trash and temporary files
+.trash/
+*.tmp
+*.bak
+
+# Credentials and private keys
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+*.p12
+id_rsa
+id_ed25519
+credentials.json
