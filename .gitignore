@@ -19,3 +19,9 @@
 id_rsa
 id_ed25519
 credentials.json
+
+# Third-party plugin code (reinstallable via community-plugins.json) and
+# device/session state — do not version in the knowledge base repo
+.obsidian/plugins/
+.obsidian/.obsidian-sync-helper-backup/
+.claudian/

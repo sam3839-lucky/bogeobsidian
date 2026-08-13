@@ -1,0 +1,2 @@
+# Preserve downloaded HTML source snapshots byte-for-byte.
+00-Inbox/Downloaded/**/*.html -text

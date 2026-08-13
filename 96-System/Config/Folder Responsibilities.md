@@ -1,4 +1,4 @@
-# Folder Responsibilities
+﻿# Folder Responsibilities
 
 目录仅在出现真实内容时创建。下表定义职责，不代表所有路径已经物理存在。
 
@@ -10,16 +10,16 @@
 | `00-Inbox/Cleaned` | 已清洗但尚未正式归类的内容 | 原始下载、最终知识笔记 | Inbox 清洗流程 | `01-Notes`、`04-Research`、`05-Content` 或 `06-Projects` | 完成正式归类后离开 |
 | `01-Notes` | 已提炼、可独立复用的知识笔记 | 原始资料、项目执行清单、发布副本 | Inbox、研究提炼、项目复盘 | Topic 链接、项目引用、内容创作 | 失效且无历史价值时进入 `99-Archive` |
 | `04-Research` | 有研究问题、证据和结论的研究工作 | 泛化收件箱、纯发布稿 | `00-Inbox/Cleaned`、项目研究需求 | `01-Notes`、`06-Projects`、`05-Content` | 研究结束且不再活跃时归档 |
-| `04-Research/AI` | AI 领域的研究材料与分析 | 房地产、教育或泛用笔记 | AI 资料与研究任务 | Notes、Projects、Content | 研究失效或项目结束 |
+| `04-Research/AI` | 已停用：AI 归能力层（89-Prompts、97/98、96-System），不再作为内容主题位（见 ADR-017） | 任何 AI 内容主题 | 不适用 | 不适用 | 不适用 |
 | `04-Research/房地产` | 房地产领域的研究材料与分析 | AI、教育或客户隐私凭据 | 房地产资料与研究任务 | Notes、Projects、Content | 研究失效或项目结束 |
-| `04-Research/小孩教育` | 小孩教育领域的研究材料与分析 | 与研究无关的私人原始记录 | 教育资料与研究任务 | Notes、Projects、Content | 研究失效或项目结束 |
-| `05-Content` | 内容生产过程与发布记录 | 研究原件的重复副本 | Notes、Research、Projects | Ideas、Briefs、Drafts、Scripts、Published | 内容停用后进入 `99-Archive` |
+| `04-Research/小孩教育` | 小孩教育知识存放（纯知识仓库，不进入生产层，见 ADR-017） | 与研究无关的私人原始记录 | 教育资料与研究任务 | 01-Notes（查询用），不进 05-Content 生产 | 研究失效或项目结束 |
+| `05-Content` | 平台无关的内容生产过程与发布记录 | 研究原件的重复副本、按平台复制的母稿 | Notes、Research、Projects | Ideas、Briefs、Drafts 或 Scripts、Review、Published、Repurpose 或 Archive | 内容停用后进入 `99-Archive` |
 | `05-Content/Ideas` | 尚未承诺制作的选题 | 完整草稿、发布成品副本 | 日常捕获、研究洞察 | `Briefs` 或放弃 | 明确放弃或长期无价值 |
 | `05-Content/Briefs` | 已筛选选题的受众、角度和证据需求 | 完整正文、视频工程文件 | Ideas、项目需求 | `Drafts` 或 `Scripts` | 取消制作或内容发布后按需归档 |
-| `05-Content/Drafts` | 图文母稿及修订中的正文 | 多平台重复副本 | Briefs、Notes、Research | Published 或 Scripts | 发布完成且无需继续迭代 |
-| `05-Content/Scripts` | 口播、视频、音频脚本 | 视频二进制工程和无关附件 | Briefs、Drafts | Published | 发布完成且无需继续迭代 |
-| `05-Content/Published` | 发布记录、链接、日期和效果复盘 | 重复保存各平台相同正文 | Drafts、Scripts | 复盘进入 Notes 或 Archive | 停止追踪且复盘完成 |
-| `06-Projects` | 有目标、期限、责任与交付物的项目材料 | 永久领域资料、无期限主题集合 | 研究需求、内容计划、真实任务 | Notes、Content 或 Archive | 目标完成、取消或长期冻结 |
+| `05-Content/Drafts` | 图文母稿及修订中的正文 | 多平台重复副本 | Briefs、Notes、Research | Review 或 Scripts | 通过审阅并发布，或取消制作 |
+| `05-Content/Scripts` | 口播、视频、音频脚本 | 视频二进制工程和无关附件 | Briefs、Drafts | Review | 通过审阅并发布，或取消制作 |
+| `05-Content/Published` | 发布记录、链接、日期和效果复盘 | 重复保存各平台相同正文、虚构表现数据 | Review 通过的 Drafts 或 Scripts | Repurpose、Notes 或 Archive | 停止追踪且复盘完成 |
+| `06-Projects` | 有明确目标、成功标准和结束条件的真实项目；每个项目至少含 `Project-Status.md`、`Decisions.md`、`Resources.md` | 永久领域资料、无期限主题集合、仅有想法的事项 | 研究需求、内容计划、真实任务 | Notes、Content 或 Archive | 目标完成、明确取消或长期冻结 |
 | `07-Topics` | 基于真实笔记形成的主题导航页 | 原始资料和正文副本 | Notes、Research、Projects 的链接 | 持续维护导航 | 主题失效或不再有导航价值 |
 | `89-Prompts` | 已验证、可复用且无凭据的提示词 | 未测试片段、账号信息、API Key | 实际 AI 工作流验证 | Templates、AI Context 或继续迭代 | 模型或流程变化导致失效 |
 | `90-Templates` | 稳定的笔记和工作流模板 | 具体业务内容、未验证草稿 | 元数据规范与重复工作流 | 创建新笔记时实例化 | 被新模板替代且完成迁移 |
@@ -38,3 +38,5 @@
 - 新目录必须同时有首个真实文件或明确的即时工作用途。
 - 同一文件只能有一个主存放位置；其他关系使用链接和后续元数据。
 - 删除、批量移动、批量重命名必须单独展示影响并获得确认。
+
+| `08-IP-品牌` | 波哥个人品牌与经营资料（IP 定位、运营方案、人设、海报、形象照） | 房地产/教育/AI 知识、Inbox 待处理内容 | 00-Inbox/Downloaded 迁移 | 常驻品牌库，供内容创作调用 | 品牌停用或不再维护时归档 |

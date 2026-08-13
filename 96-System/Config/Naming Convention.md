@@ -26,7 +26,7 @@
 | `source` | `来源标题 - 已知作者或机构`；作者未知则省略 | `世界发展报告 - 世界银行.md` |
 | `atomic-note` | 单一概念或完整观点 | `检索增强不能替代来源核验.md` |
 | `daily-note` | `YYYY-MM-DD.md` | `2026-08-09.md` |
-| `project` | 可验证结果或交付物 | `建立房地产市场月度监测.md` |
+| `project` | 项目目录使用可验证结果或交付物；目录内状态页固定为 `Project-Status.md` | `建立房地产市场月度监测/Project-Status.md` |
 | `decision` | `决策主题`；系统 ADR 可用 `ADR-NNN - 标题` | `是否采用统一内容母稿.md` |
 | `prompt` | `任务 + 关键约束` | `研究报告事实核验提示词.md` |
 | `content-brief` | `内容主题 - Brief` | `家庭 AI 素养 - Brief.md` |
@@ -37,6 +37,8 @@
 ## 模板命名
 
 模板文件使用本阶段指定的英文名称，存放于 `90-Templates`。模板不是实际知识笔记，其 YAML 中必填实例值保持为空，复制后必须填写。
+
+项目目录中的 `Project-Status.md`、`Decisions.md` 和 `Resources.md` 是受控固定文件名，不使用“最终版”等版本词。只有真实项目通过准入后才创建这三个文件。
 
 ## 附件命名
 

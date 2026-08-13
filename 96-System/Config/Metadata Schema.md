@@ -4,6 +4,8 @@
 
 所有新笔记使用英文 YAML 字段名、中文正文和受控值。现有笔记不批量注入 YAML。模板只使用 Obsidian 原生可解析的静态 YAML，不依赖插件。
 
+系统指南、导航 Index，以及项目目录内只承担索引职责的 `Decisions.md`、`Resources.md` 不是独立知识实体，可以不设 YAML；项目的唯一项目元数据位于 `Project-Status.md`。具体决策和具体来源仍使用各自模板与受控类型。
+
 ## 基础字段
 
 | 字段 | 类型 | 通用要求 | 说明 |
@@ -61,10 +63,10 @@
 | `source` | `draft`, `active`, `completed`, `archived` |
 | `atomic-note` | `draft`, `active`, `deprecated`, `archived` |
 | `daily-note` | `active`, `completed`, `archived` |
-| `project` | `draft`, `active`, `paused`, `completed`, `archived` |
+| `project` | `planned`, `active`, `blocked`, `paused`, `completed`, `archived` |
 | `decision` | `proposed`, `accepted`, `rejected`, `superseded` |
 | `prompt` | `draft`, `active`, `deprecated`, `archived` |
-| `content-brief` | `draft`, `active`, `paused`, `completed`, `published`, `archived` |
+| `content-brief` | `idea`, `brief`, `draft`, `review`, `published`, `repurpose`, `archived` |
 | `topic-hub` | `active`, `deprecated`, `archived` |
 | `ai-memory` | `draft`, `active`, `deprecated`, `archived` |
 | `audit-report` | `draft`, `completed`, `archived` |
@@ -95,8 +97,9 @@
 - `atomic-note`：`confidence` 必填，正文只表达一个可复用观点。
 - `daily-note`：文件名和 `title` 使用同一日期。
 - `decision`：正文必须记录背景、决策、替代方案与影响。
-- `prompt`：不得包含 Token、密码、Cookie、API Key 或私人数据。
-- `content-brief`：平台尚未在本次配置中正式填写，平台信息暂写正文，不新增目录或 YAML 枚举。
+- `project`：只有目标、成功标准和结束条件均明确时才能实例化；正文必须记录当前状态、已完成事项、待办、下一步、风险、阻塞与关键决策。
+- `prompt`：正文必须记录使用场景、输入要求、输出格式、推荐模型、版本、最后测试日期、测试样例、已知限制、失败案例、评价标准和变更记录；不得包含 Token、密码、Cookie、API Key 或私人数据。
+- `content-brief`：正文必须记录目标平台、目标受众、核心观点、证据来源、内容形式、当前状态、发布日期、发布链接、复用计划、表现数据与复盘结论。平台尚未正式填写时使用“待补充”，不新增平台目录或 YAML 枚举。
 - `topic-hub`：只有真实笔记达到导航需要时才实例化；本阶段不创建 Topic Hub。
 - `ai-memory`：`source` 或 `related` 至少一个非空，`confidence` 必填；禁止凭据和未经授权隐私。
 - `audit-report`：正文必须包含范围、证据、结论和阻塞项。
