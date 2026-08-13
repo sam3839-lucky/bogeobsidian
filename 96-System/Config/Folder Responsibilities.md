@@ -12,6 +12,7 @@
 | `04-Research` | 有研究问题、证据和结论的研究工作 | 泛化收件箱、纯发布稿 | `00-Inbox/Cleaned`、项目研究需求 | `01-Notes`、`06-Projects`、`05-Content` | 研究结束且不再活跃时归档 |
 | `04-Research/AI` | 已停用：AI 归能力层（89-Prompts、97/98、96-System），不再作为内容主题位（见 ADR-017） | 任何 AI 内容主题 | 不适用 | 不适用 | 不适用 |
 | `04-Research/房地产` | 房地产领域的研究材料与分析 | AI、教育或客户隐私凭据 | 房地产资料与研究任务 | Notes、Projects、Content | 研究失效或项目结束 |
+| `04-Research/财商` | 财商领域知识（财产性收入、资产配置、理财观念与方法，见 ADR-018） | 房地产/教育/AI 知识、原始下载 | 财商资料与研究任务 | 01-Notes（可生产）、05-Content 选题 | 研究失效或项目结束 |
 | `04-Research/小孩教育` | 小孩教育知识存放（纯知识仓库，不进入生产层，见 ADR-017） | 与研究无关的私人原始记录 | 教育资料与研究任务 | 01-Notes（查询用），不进 05-Content 生产 | 研究失效或项目结束 |
 | `05-Content` | 平台无关的内容生产过程与发布记录 | 研究原件的重复副本、按平台复制的母稿 | Notes、Research、Projects | Ideas、Briefs、Drafts 或 Scripts、Review、Published、Repurpose 或 Archive | 内容停用后进入 `99-Archive` |
 | `05-Content/Ideas` | 尚未承诺制作的选题 | 完整草稿、发布成品副本 | 日常捕获、研究洞察 | `Briefs` 或放弃 | 明确放弃或长期无价值 |
