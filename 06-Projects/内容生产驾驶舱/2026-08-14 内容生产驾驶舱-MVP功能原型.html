@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>内容生产驾驶舱｜MVP 功能原型</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #16181c;
+      --nav: #1b1e23;
+      --surface: #20242a;
+      --surface-2: #262b32;
+      --surface-3: #2d333c;
+      --line: #383f49;
+      --line-strong: #505966;
+      --text: #eef1f4;
+      --muted: #a9b0ba;
+      --faint: #737c88;
+      --accent: #5aa6a8;
+      --accent-strong: #7bc4c4;
+      --accent-soft: rgba(90,166,168,.13);
+      --human: #d7a84f;
+      --human-soft: rgba(215,168,79,.13);
+      --success: #67b987;
+      --success-soft: rgba(103,185,135,.13);
+      --danger: #dc7171;
+      --danger-soft: rgba(220,113,113,.12);
+      --info: #76a7e8;
+      --info-soft: rgba(118,167,232,.13);
+      --radius-sm: 4px;
+      --radius-md: 7px;
+      --radius-lg: 10px;
+      --shadow: 0 18px 48px rgba(0,0,0,.27);
+      --font-ui: "Source Han Sans SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+      --font-data: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-size: 14px;
+      line-height: 1.52;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+      outline: 2px solid var(--accent-strong);
+      outline-offset: 2px;
+    }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+    .app-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 236px minmax(0, 1fr);
+      grid-template-rows: 48px minmax(0, 1fr);
+      grid-template-areas: "top top" "nav main";
+    }
+
+    .topbar {
+      grid-area: top;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--line);
+      background: #181b20;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+    .brand { display:flex; align-items:center; gap:9px; min-width: 220px; font-weight: 680; letter-spacing: .02em; }
+    .brand-mark { width: 22px; height: 22px; border: 1px solid var(--accent); display:grid; place-items:center; border-radius:5px; color:var(--accent-strong); font: 700 11px var(--font-data); }
+    .vault-status { display:flex; align-items:center; gap:7px; color:var(--muted); font-size:12px; }
+    .dot { width:7px; height:7px; border-radius:50%; background:var(--success); box-shadow:0 0 0 3px var(--success-soft); }
+    .top-spacer { flex:1; }
+    .state-lab { display:flex; align-items:center; gap:7px; }
+    .state-lab label { color:var(--muted); font-size:12px; }
+    select, .input, textarea {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius-sm);
+      padding: 7px 9px;
+    }
+    .topbar select { padding:5px 28px 5px 8px; font-size:12px; }
+
+    .sidebar {
+      grid-area: nav;
+      border-right: 1px solid var(--line);
+      background: var(--nav);
+      padding: 12px 9px 18px;
+      overflow-y: auto;
+    }
+    .nav-group { margin: 8px 0 14px; }
+    .nav-title { color:var(--faint); font:600 10px/1.4 var(--font-data); letter-spacing:.12em; padding: 5px 9px; text-transform:uppercase; }
+    .nav-item {
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      border:1px solid transparent;
+      border-radius:var(--radius-sm);
+      background:transparent;
+      padding:8px 9px;
+      text-align:left;
+      cursor:pointer;
+      color:#c9cfd6;
+      min-height:36px;
+    }
+    .nav-item:hover { background:var(--surface); }
+    .nav-item.active { color:#fff; background:var(--accent-soft); border-color:rgba(90,166,168,.36); }
+    .nav-key { color:var(--faint); font: 10px var(--font-data); }
+    .nav-count { min-width:20px; padding:1px 6px; border-radius:10px; background:var(--surface-3); color:var(--muted); font:11px var(--font-data); text-align:center; }
+    .sidebar-note { margin:18px 7px 0; border-top:1px solid var(--line); padding-top:12px; color:var(--faint); font-size:11px; }
+
+    main { grid-area: main; min-width: 0; overflow: auto; }
+    .workspace { max-width: 1500px; margin: 0 auto; padding: 20px 24px 88px; }
+    .page-header { display:flex; align-items:flex-start; gap:16px; margin-bottom:18px; }
+    .page-heading { min-width:0; }
+    .breadcrumb { color:var(--faint); font:11px var(--font-data); margin-bottom:5px; }
+    h1 { margin:0; font-size:23px; line-height:1.25; letter-spacing:-.01em; }
+    .page-subtitle { color:var(--muted); margin-top:5px; max-width:760px; }
+    .page-actions { margin-left:auto; display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; }
+
+    .btn {
+      border:1px solid var(--line-strong);
+      border-radius:var(--radius-sm);
+      background:var(--surface-2);
+      min-height:34px;
+      padding:6px 11px;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:7px;
+      white-space:nowrap;
+    }
+    .btn:hover { border-color:#6b7684; background:var(--surface-3); }
+    .btn.primary { background:var(--accent); color:#08191a; border-color:var(--accent); font-weight:700; }
+    .btn.primary:hover { background:var(--accent-strong); }
+    .btn.human { background:var(--human); color:#211603; border-color:var(--human); font-weight:700; }
+    .btn.ghost { background:transparent; }
+    .btn.danger { border-color:rgba(220,113,113,.52); color:#f1a5a5; background:var(--danger-soft); }
+    .btn:disabled { opacity:.45; cursor:not-allowed; }
+    .btn.small { min-height:29px; padding:4px 8px; font-size:12px; }
+
+    .badge { display:inline-flex; align-items:center; gap:5px; border:1px solid var(--line-strong); border-radius:10px; padding:2px 7px; color:var(--muted); font-size:11px; line-height:1.4; white-space:nowrap; }
+    .badge.ai { color:var(--accent-strong); border-color:rgba(90,166,168,.48); background:var(--accent-soft); font-family:var(--font-data); }
+    .badge.human { color:#e9c779; border-color:rgba(215,168,79,.48); background:var(--human-soft); font-family:var(--font-data); }
+    .badge.success { color:#8ed2a7; border-color:rgba(103,185,135,.44); background:var(--success-soft); }
+    .badge.danger { color:#efa0a0; border-color:rgba(220,113,113,.44); background:var(--danger-soft); }
+    .badge.info { color:#9abfed; border-color:rgba(118,167,232,.44); background:var(--info-soft); }
+    .badge.neutral { color:#c2c8cf; }
+    .mono { font-family:var(--font-data); font-size:.92em; }
+    .muted { color:var(--muted); }
+    .faint { color:var(--faint); }
+    .strong { font-weight:680; }
+
+    .panel { background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-md); min-width:0; }
+    .panel-head { display:flex; align-items:center; gap:10px; min-height:46px; padding:10px 13px; border-bottom:1px solid var(--line); }
+    .panel-title { font-weight:680; }
+    .panel-sub { color:var(--muted); font-size:12px; }
+    .panel-head .spacer { flex:1; }
+    .panel-body { padding:14px; }
+    .rule { height:1px; background:var(--line); margin:13px 0; }
+    .grid-2 { display:grid; grid-template-columns:minmax(0,1fr) minmax(300px,.72fr); gap:14px; }
+    .grid-equal { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+    .stack { display:grid; gap:12px; }
+    .row { display:flex; align-items:center; gap:9px; }
+    .row.wrap { flex-wrap:wrap; }
+    .row .spacer { flex:1; }
+
+    .metric-strip { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border:1px solid var(--line); border-radius:var(--radius-md); overflow:hidden; margin-bottom:14px; }
+    .metric { padding:11px 13px; background:var(--surface); border-right:1px solid var(--line); }
+    .metric:last-child { border:0; }
+    .metric-label { color:var(--muted); font-size:12px; }
+    .metric-value { display:flex; align-items:baseline; gap:6px; margin-top:2px; font:700 21px/1.25 var(--font-data); }
+    .metric-note { font:11px var(--font-ui); color:var(--faint); }
+
+    .next-action { border:1px solid rgba(215,168,79,.48); background:var(--human-soft); border-radius:var(--radius-md); padding:13px; }
+    .next-action .eyebrow { color:#e7c476; font:700 10px var(--font-data); letter-spacing:.1em; }
+    .next-action h2 { font-size:17px; margin:5px 0 3px; }
+    .next-action p { color:#c7cbd0; margin:0 0 11px; }
+    .reason { margin-top:8px; color:var(--muted); font-size:12px; }
+
+    .list { display:grid; }
+    .list-row { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:11px; padding:11px 13px; border-bottom:1px solid var(--line); }
+    .list-row:last-child { border-bottom:0; }
+    .list-row.selectable { cursor:pointer; }
+    .list-row.selectable:hover { background:rgba(255,255,255,.025); }
+    .list-row.selected { background:var(--accent-soft); box-shadow:inset 3px 0 0 var(--accent); }
+    .list-title { font-weight:640; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .list-meta { color:var(--muted); font-size:12px; margin-top:3px; }
+    .check-box { width:17px; height:17px; border:1px solid var(--line-strong); border-radius:3px; display:grid; place-items:center; color:#08191a; font-size:11px; }
+    .selected .check-box { background:var(--accent); border-color:var(--accent); }
+    .selected .check-box::after { content:"✓"; font-weight:800; }
+
+    .stagebar { display:flex; align-items:center; gap:0; overflow-x:auto; padding-bottom:4px; margin-bottom:14px; }
+    .stage-step { min-width:112px; display:flex; align-items:center; color:var(--faint); font-size:12px; }
+    .stage-step::after { content:""; height:1px; flex:1; min-width:18px; background:var(--line-strong); margin:0 6px; }
+    .stage-step:last-child::after { display:none; }
+    .stage-step.done { color:var(--success); }
+    .stage-step.active { color:var(--text); font-weight:700; }
+    .stage-step.active .step-dot { border-color:var(--accent); box-shadow:0 0 0 4px var(--accent-soft); }
+    .step-dot { width:9px; height:9px; border-radius:50%; border:2px solid currentColor; margin-right:6px; flex:0 0 auto; }
+
+    .kanban { display:grid; grid-template-columns:repeat(6,minmax(210px,1fr)); gap:10px; overflow-x:auto; padding-bottom:10px; }
+    .column { background:#1c1f24; border:1px solid var(--line); border-radius:var(--radius-md); min-height:420px; }
+    .column-head { display:flex; align-items:center; gap:8px; padding:10px; border-bottom:1px solid var(--line); position:sticky; top:0; background:#1c1f24; border-radius:var(--radius-md) var(--radius-md) 0 0; }
+    .task-card { margin:8px; padding:10px; border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--surface); cursor:pointer; }
+    .task-card:hover { border-color:var(--line-strong); }
+    .task-card .title { font-weight:650; margin-bottom:7px; }
+    .task-card .foot { display:flex; justify-content:space-between; color:var(--faint); font-size:11px; margin-top:9px; }
+    .task-card.blocked { border-color:rgba(220,113,113,.5); }
+
+    .asset-row { display:grid; grid-template-columns:minmax(130px,.55fr) minmax(0,1fr) auto; gap:10px; align-items:center; padding:10px 0; border-bottom:1px solid var(--line); }
+    .asset-row:last-child { border:0; }
+    .asset-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .asset-type { color:var(--muted); font-size:12px; }
+
+    .editor { min-height:520px; background:#1b1e23; border:1px solid var(--line); border-radius:var(--radius-sm); padding:18px 20px; }
+    .editor h2 { font-size:21px; margin:0 0 16px; }
+    .editor h3 { font-size:16px; margin:20px 0 8px; }
+    .editor p { margin:0 0 12px; color:#d8dce1; }
+    .editor .source-anchor { border-bottom:1px dashed var(--accent); color:var(--accent-strong); }
+    .editor-toolbar { display:flex; align-items:center; gap:6px; padding:7px; border:1px solid var(--line); border-bottom:0; background:var(--surface-2); border-radius:var(--radius-sm) var(--radius-sm) 0 0; }
+    .editor-toolbar + .editor { border-radius:0 0 var(--radius-sm) var(--radius-sm); }
+    .tool { border:0; background:transparent; color:var(--muted); min-width:28px; height:28px; border-radius:3px; cursor:pointer; }
+    .tool:hover { color:var(--text); background:var(--surface-3); }
+
+    .dual-tabs { display:none; }
+    .dual-editor { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .platform-head { display:flex; align-items:center; gap:8px; margin-bottom:9px; }
+    .platform-head h2 { margin:0; font-size:16px; }
+    .platform-head .spacer { flex:1; }
+
+    .candidate { border:1px solid var(--line); border-radius:var(--radius-md); padding:13px; cursor:pointer; background:var(--surface); position:relative; }
+    .candidate:hover { border-color:var(--line-strong); }
+    .candidate.selected { border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent); background:var(--accent-soft); }
+    .candidate .rank { color:var(--faint); font:700 11px var(--font-data); }
+    .candidate h3 { font-size:16px; margin:8px 0 7px; }
+    .candidate p { color:var(--muted); margin:0 0 11px; font-size:13px; }
+    .evidence { padding:8px 9px; background:#181b1f; border-radius:var(--radius-sm); color:#c2c8ce; font-size:12px; }
+    .candidate.selected::after { content:"已选择"; position:absolute; top:10px; right:10px; color:var(--accent-strong); font:700 10px var(--font-data); }
+
+    .checklist { display:grid; gap:8px; }
+    .check-item { display:grid; grid-template-columns:22px minmax(0,1fr) auto; align-items:start; gap:9px; padding:9px; border:1px solid var(--line); border-radius:var(--radius-sm); }
+    .check-item.checked { border-color:rgba(103,185,135,.42); background:var(--success-soft); }
+    .check-icon { width:18px; height:18px; border:1px solid var(--line-strong); border-radius:3px; display:grid; place-items:center; color:#0c1d12; }
+    .checked .check-icon { background:var(--success); border-color:var(--success); }
+    .checked .check-icon::after { content:"✓"; font-weight:800; }
+    .check-desc { color:var(--muted); font-size:12px; margin-top:2px; }
+
+    .form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .field { display:grid; gap:5px; }
+    .field.full { grid-column:1/-1; }
+    .field label { color:var(--muted); font-size:12px; }
+    textarea { min-height:96px; resize:vertical; }
+    .help { color:var(--faint); font-size:11px; }
+
+    .platform-card { border:1px solid var(--line); border-radius:var(--radius-md); overflow:hidden; }
+    .platform-card > header { display:flex; align-items:center; gap:8px; padding:11px 13px; background:var(--surface-2); border-bottom:1px solid var(--line); }
+    .platform-card > .body { padding:13px; }
+
+    .recovery-ledger { font-family:var(--font-data); font-size:12px; border:1px solid var(--line); border-radius:var(--radius-sm); overflow:hidden; }
+    .ledger-row { display:grid; grid-template-columns:92px minmax(180px,1fr) 90px 90px 100px; gap:8px; padding:8px 10px; border-bottom:1px solid var(--line); align-items:center; }
+    .ledger-row:last-child { border:0; }
+    .ledger-head { color:var(--faint); background:#181b1f; font-size:10px; text-transform:uppercase; }
+    .hash { overflow:hidden; text-overflow:ellipsis; color:var(--muted); }
+
+    .notice { display:none; align-items:flex-start; gap:10px; margin-bottom:14px; border:1px solid var(--line-strong); border-radius:var(--radius-md); padding:11px 12px; }
+    .notice.visible { display:flex; }
+    .notice.info { background:var(--info-soft); border-color:rgba(118,167,232,.42); }
+    .notice.warn { background:var(--human-soft); border-color:rgba(215,168,79,.46); }
+    .notice.error { background:var(--danger-soft); border-color:rgba(220,113,113,.46); }
+    .notice.success { background:var(--success-soft); border-color:rgba(103,185,135,.46); }
+    .notice-mark { flex:0 0 auto; width:22px; height:22px; display:grid; place-items:center; border:1px solid currentColor; border-radius:50%; font:700 11px var(--font-data); }
+    .notice-title { font-weight:700; }
+    .notice-copy { color:#c9cfd5; font-size:12px; margin-top:2px; }
+    .notice-actions { margin-left:auto; display:flex; gap:7px; }
+
+    .state-stage { position:relative; }
+    .state-replacement { display:none; min-height:500px; place-items:center; border:1px dashed var(--line-strong); border-radius:var(--radius-md); background:rgba(0,0,0,.08); text-align:center; padding:40px; }
+    .state-replacement.visible { display:grid; }
+    .state-replacement h2 { margin:12px 0 5px; font-size:18px; }
+    .state-replacement p { color:var(--muted); max-width:520px; margin:0 auto 15px; }
+    .state-symbol { width:46px; height:46px; border:1px solid var(--line-strong); border-radius:50%; display:grid; place-items:center; color:var(--muted); font:700 15px var(--font-data); margin:auto; }
+    .spinner { width:28px; height:28px; border:3px solid var(--line-strong); border-top-color:var(--accent); border-radius:50%; animation:spin .8s linear infinite; margin:auto; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .progress { height:5px; background:#15171a; border-radius:4px; overflow:hidden; margin:14px auto 8px; max-width:380px; }
+    .progress > i { display:block; width:62%; height:100%; background:var(--accent); animation:pulse 1.4s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:.55} 50%{opacity:1} }
+    .skeleton { width:min(640px,100%); display:grid; gap:10px; }
+    .sk { height:14px; border-radius:3px; background:linear-gradient(90deg,#252a31,#313740,#252a31); background-size:200% 100%; animation:shimmer 1.2s linear infinite; }
+    .sk.short { width:42%; }
+    .sk.med { width:72%; }
+    .sk.block { height:96px; }
+    @keyframes shimmer { to { background-position:-200% 0; } }
+
+    .confirm-sheet { display:none; position:fixed; inset:0; background:rgba(7,8,10,.72); z-index:70; align-items:center; justify-content:center; padding:20px; }
+    .confirm-sheet.visible { display:flex; }
+    .confirm-card { width:min(620px,100%); background:var(--surface); border:1px solid rgba(215,168,79,.55); border-radius:var(--radius-lg); box-shadow:var(--shadow); }
+    .confirm-head { padding:14px 16px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:9px; }
+    .confirm-body { padding:16px; }
+    .confirm-body h2 { margin:0 0 7px; font-size:18px; }
+    .confirm-body p { color:var(--muted); }
+    .confirm-actions { display:flex; justify-content:flex-end; gap:8px; padding:12px 16px; border-top:1px solid var(--line); }
+
+    .toast { position:fixed; right:20px; bottom:20px; width:min(390px,calc(100vw - 40px)); background:#242a30; border:1px solid rgba(103,185,135,.55); border-radius:var(--radius-md); box-shadow:var(--shadow); padding:12px 13px; display:none; z-index:80; }
+    .toast.visible { display:block; animation:toast-in .18s ease-out; }
+    @keyframes toast-in { from { opacity:0; transform:translateY(8px); } }
+
+    .flowbar { position:fixed; left:252px; right:16px; bottom:14px; background:#24292f; border:1px solid var(--line-strong); border-radius:var(--radius-md); box-shadow:var(--shadow); padding:10px 12px; z-index:50; display:none; align-items:center; gap:11px; }
+    .flowbar.visible { display:flex; }
+    .flow-name { min-width:180px; }
+    .flow-name b { display:block; font-size:12px; }
+    .flow-name span { color:var(--muted); font-size:11px; }
+    .flow-steps { flex:1; display:flex; gap:5px; overflow:hidden; }
+    .flow-pill { height:5px; background:var(--line-strong); flex:1; min-width:16px; border-radius:4px; }
+    .flow-pill.done { background:var(--success); }
+    .flow-pill.active { background:var(--human); }
+    .flow-action { max-width:360px; color:#d5d9de; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+    .flow-menu { position:fixed; top:52px; right:18px; width:min(460px,calc(100vw - 36px)); background:var(--surface); border:1px solid var(--line-strong); border-radius:var(--radius-md); box-shadow:var(--shadow); padding:8px; z-index:60; display:none; }
+    .flow-menu.visible { display:grid; gap:6px; }
+    .flow-option { display:grid; grid-template-columns:28px minmax(0,1fr); gap:9px; text-align:left; padding:10px; border:1px solid transparent; background:transparent; border-radius:var(--radius-sm); cursor:pointer; }
+    .flow-option:hover { border-color:var(--line); background:var(--surface-2); }
+    .flow-no { color:var(--accent-strong); font:700 12px var(--font-data); }
+    .flow-option b { display:block; }
+    .flow-option span { color:var(--muted); font-size:12px; }
+
+    .screen-caption { color:var(--faint); font-size:11px; margin-top:12px; }
+    .empty-illustration { width:54px; height:54px; margin:auto; border:1px solid var(--line-strong); display:grid; place-items:center; border-radius:12px; font:700 12px var(--font-data); color:var(--muted); transform:rotate(-2deg); }
+
+    @media (max-width: 1100px) {
+      .app-shell { grid-template-columns: 190px minmax(0,1fr); }
+      .brand { min-width:174px; }
+      .grid-2, .grid-equal { grid-template-columns:1fr; }
+      .grid-3 { grid-template-columns:1fr; }
+      .metric-strip { grid-template-columns:repeat(2,1fr); }
+      .metric:nth-child(2) { border-right:0; }
+      .metric:nth-child(-n+2) { border-bottom:1px solid var(--line); }
+      .flowbar { left:206px; }
+    }
+    @media (max-width: 760px) {
+      .app-shell { grid-template-columns:1fr; grid-template-rows:auto auto minmax(0,1fr); grid-template-areas:"top" "nav" "main"; }
+      .topbar { flex-wrap:wrap; min-height:54px; padding:8px 10px; }
+      .brand { min-width:auto; }
+      .vault-status { display:none; }
+      .state-lab { width:100%; order:3; }
+      .state-lab select { flex:1; }
+      .sidebar { display:flex; gap:6px; overflow-x:auto; border-right:0; border-bottom:1px solid var(--line); padding:7px; }
+      .nav-group { display:contents; }
+      .nav-title, .nav-key, .nav-count, .sidebar-note { display:none; }
+      .nav-item { width:auto; flex:0 0 auto; }
+      .workspace { padding:16px 12px 104px; }
+      .page-header { display:block; }
+      .page-actions { margin-top:12px; justify-content:flex-start; }
+      .metric-strip { grid-template-columns:1fr; }
+      .metric { border-right:0; border-bottom:1px solid var(--line); }
+      .dual-editor { grid-template-columns:1fr; }
+      .dual-tabs { display:flex; margin-bottom:8px; }
+      .dual-editor[data-active="video"] .platform-pane.article { display:none; }
+      .dual-editor[data-active="article"] .platform-pane:not(.article) { display:none; }
+      .form-grid { grid-template-columns:1fr; }
+      .ledger-row { grid-template-columns:72px minmax(170px,1fr) 82px; }
+      .ledger-row > :nth-child(4), .ledger-row > :nth-child(5) { display:none; }
+      .flowbar { left:10px; right:10px; bottom:8px; flex-wrap:wrap; }
+      .flow-name { min-width:0; flex:1; }
+      .flow-steps { order:3; flex-basis:100%; }
+      .flow-action { display:none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar" aria-label="全局工具栏">
+      <div class="brand"><span class="brand-mark">CP</span><span>内容生产驾驶舱</span></div>
+      <div class="vault-status"><span class="dot"></span><span>Vault 正常 · 索引 2 分钟前</span></div>
+      <div class="top-spacer"></div>
+      <div class="state-lab">
+        <label for="stateSelect">状态实验台</label>
+        <select id="stateSelect" aria-label="切换当前页面状态">
+          <option value="normal">正常状态</option>
+          <option value="first_use">首次使用</option>
+          <option value="empty">空数据</option>
+          <option value="loading">加载中</option>
+          <option value="ai_generating">AI 生成中</option>
+          <option value="ai_failed">AI 调用失败</option>
+          <option value="missing_file">文件缺失</option>
+          <option value="external_change">文件被外部修改</option>
+          <option value="review_invalid">审核失效</option>
+          <option value="key_error">权限或密钥错误</option>
+          <option value="success">操作成功</option>
+          <option value="partial">部分完成</option>
+          <option value="confirm">需要人工确认</option>
+        </select>
+      </div>
+      <button class="btn small" id="flowMenuButton" aria-expanded="false">演示三条链</button>
+    </header>
+
+    <aside class="sidebar" aria-label="主要导航" id="sidebar"></aside>
+    <main id="main" tabindex="-1">
+      <div class="workspace">
+        <div class="page-header">
+          <div class="page-heading">
+            <div class="breadcrumb" id="breadcrumb"></div>
+            <h1 id="pageTitle"></h1>
+            <div class="page-subtitle" id="pageSubtitle"></div>
+          </div>
+          <div class="page-actions" id="pageActions"></div>
+        </div>
+        <div class="notice" id="stateNotice" role="status" aria-live="polite"></div>
+        <div class="state-stage">
+          <section id="pageContent" aria-live="polite"></section>
+          <section class="state-replacement" id="stateReplacement"></section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="flow-menu" id="flowMenu" role="dialog" aria-label="交互链演示">
+    <button class="flow-option" data-flow="new"><span class="flow-no">01</span><span><b>新素材快速生产</b><span>新素材 → 快速选题 → Brief → 爆款设计 → 双稿 → 核验</span></span></button>
+    <button class="flow-option" data-flow="library"><span class="flow-no">02</span><span><b>库内素材常规闭环</b><span>库内素材 → 常规选题 → 内容生产 → 发布 → 复盘</span></span></button>
+    <button class="flow-option" data-flow="recovery"><span class="flow-no">03</span><span><b>中断与冲突恢复</b><span>生成中断 → 冲突发现 → 恢复或回滚 → 继续生产</span></span></button>
+  </div>
+
+  <div class="flowbar" id="flowbar" aria-live="polite">
+    <div class="flow-name"><b id="flowName"></b><span id="flowIndex"></span></div>
+    <div class="flow-steps" id="flowSteps"></div>
+    <div class="flow-action" id="flowAction"></div>
+    <button class="btn small ghost" id="flowPrev">上一步</button>
+    <button class="btn small primary" id="flowNext">下一步</button>
+    <button class="btn small ghost" id="flowClose" aria-label="退出演示">退出</button>
+  </div>
+
+  <div class="confirm-sheet" id="confirmSheet" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="confirm-card">
+      <div class="confirm-head"><span class="badge human">人工关卡</span><strong>系统不会代替你做这个决定</strong></div>
+      <div class="confirm-body">
+        <h2 id="confirmTitle">确认放行当前内容？</h2>
+        <p id="confirmCopy"></p>
+        <div class="next-action">
+          <div class="eyebrow">确认后会发生</div>
+          <div id="confirmImpact" style="margin-top:6px"></div>
+        </div>
+      </div>
+      <div class="confirm-actions"><button class="btn ghost" id="confirmCancel">返回检查</button><button class="btn human" id="confirmAccept">我已核验，确认放行</button></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const groups = [
+      {title:'启动与总览', items:[['onboarding','首次配置与体检','01'],['today','今日工作台','02'],['pipeline','内容流水线','03']]},
+      {title:'进料与选题', items:[['inbox','素材 Inbox','04'],['topics','快速选题与确认','05']]},
+      {title:'内容生产', items:[['task','内容任务详情','06'],['brief','Brief 生成与审核','07'],['viral','爆款设计与选择','08'],['editor','双栏创作','09'],['review','人工核验清单','10']]},
+      {title:'发布闭环', items:[['publish','双平台发布登记','11'],['retrospective','数据录入与复盘','12']]},
+      {title:'安全与设置', items:[['recovery','冲突与崩溃恢复','13'],['settings','AI、密钥与规则','14']]}
+    ];
+
+    const pages = {
+      onboarding: {
+        group:'启动与总览', title:'首次配置与知识库体检',
+        subtitle:'先只读检查，再让你确认试点映射。体检不会批量改名、移动文件或补写旧 YAML。',
+        actions:[['重新体检',''],['开始安全配置','primary']],
+        html: () => `
+          <div class="grid-2">
+            <section class="panel">
+              <div class="panel-head"><span class="panel-title">体检结果</span><span class="badge success">7 项通过</span><span class="badge human">2 项待确认</span></div>
+              <div class="panel-body checklist">
+                ${healthItem('Vault 根目录可读写','E:/波哥Obsidian','ok')}
+                ${healthItem('生产流程 Guide 已找到','96-System/Guides/Content Production Workflow.md','ok')}
+                ${healthItem('元数据规范已找到','96-System/Config/Metadata Schema.md','ok')}
+                ${healthItem('恢复目录可用','插件私有目录，不进入业务搜索','ok')}
+                ${healthItem('SecretStorage 可用','密钥不会写入 Vault 或 Git','ok')}
+                ${healthItem('旧资产类型兼容性','script、viral-design、content-task 尚未登记','warn')}
+                ${healthItem('试点任务映射','需要你确认 3 条既有内容的关联文件','warn')}
+              </div>
+            </section>
+            <section class="stack">
+              <div class="next-action"><div class="eyebrow">首次配置的下一步</div><h2>确认 3 条试点内容的资产映射</h2><p>插件只展示候选关联，不根据相似文件名自动认定。</p><button class="btn human" data-confirm="mapping">开始人工确认</button></div>
+              <section class="panel"><div class="panel-head"><span class="panel-title">不会自动做的事</span></div><div class="panel-body"><div class="stack muted"><div>不批量改写旧文件</div><div>不移动现有 Brief、设计稿或稿件</div><div>不把缓存当作唯一事实来源</div><div>不把 API 密钥写进 Vault</div></div></div></section>
+            </section>
+          </div>`,
+      },
+      today: {
+        group:'启动与总览', title:'今日工作台',
+        subtitle:'打开插件后只先回答一件事：今天最该推进哪条内容，为什么。',
+        actions:[['查看 Inbox',''],['开始快速选题','primary']],
+        html: () => `
+          <div class="metric-strip">
+            ${metric('本周目标','3 / 5','还差 2 条')}${metric('等待你审核','2','人工关卡')}${metric('流程阻塞','1','已停 2 天')}${metric('待复盘','1','今天到期')}
+          </div>
+          <div class="grid-2">
+            <section class="stack">
+              <div class="next-action"><div class="eyebrow">今天最该处理 · 人工关卡</div><h2>深圳 Q2 土拍：一块住宅用地都没有，什么信号？</h2><p>确认“Q2 无住宅用地成交”的统计口径与来源日期。</p><button class="btn human" data-page="review">打开核验清单</button><div class="reason">排序原因：等待人工审核 +100 · 阻塞 2 天 +90 · 高优先级 +20</div></div>
+              <section class="panel"><div class="panel-head"><span class="panel-title">接下来</span><span class="spacer"></span><button class="btn small ghost" data-page="pipeline">查看全部流水线</button></div><div class="list">
+                ${todayRow('爆款设计','地价反超房价 + 法拍收敛','3 个方案待选择','选择方案','viral')}
+                ${todayRow('数据复盘','深圳房价连涨三个月，但别急着喊回暖','发布 7 天 · 尚未录入数据','录入数据','retrospective')}
+              </div></section>
+            </section>
+            <section class="panel"><div class="panel-head"><span class="panel-title">当前任务资产</span><span class="spacer"></span><span class="badge human">等待你</span></div><div class="panel-body">
+              <div class="list-title">深圳 Q2 土拍揭秘</div><div class="list-meta mono">content-task-20260813-shenzhen-q2-land</div><div class="rule"></div>
+              ${asset('来源素材','3 份政府官网材料','success')}${asset('内容 Brief','已通过','success')}${asset('爆款设计','已选择方案 B','success')}${asset('视频号口播稿','待核验','human')}${asset('公众号文章','待核验','human')}
+              <div class="row wrap" style="margin-top:13px"><button class="btn primary" data-page="task">打开任务详情</button><button class="btn" data-ai="事实与来源检查"><span class="badge ai">AI</span>检查事实与来源</button></div>
+            </div></section>
+          </div>`,
+      },
+      pipeline: {
+        group:'启动与总览', title:'内容流水线',
+        subtitle:'阶段是任务编排视图，不替代资产文件自己的状态；阻塞与审核失效会停止推进。',
+        actions:[['筛选：全部',''],['新建任务','primary']],
+        html: () => `<div class="row wrap" style="margin-bottom:12px"><span class="badge neutral">全部 14</span><span class="badge human">待人工 2</span><span class="badge danger">阻塞 1</span><span class="badge info">热点 1</span><span class="spacer"></span><span class="muted">按进入阶段时间排序</span></div>
+          <section class="kanban">
+            ${column('选题确认',2,[card('住房=大宗消费品？别被标题骗了','普通','今天'),card('深圳新盘“日光”背后的真实去化','候选','明天')])}
+            ${column('Brief',2,[card('法拍收敛是否等于楼市企稳','AI 草稿','8 分钟'),card('深圳二手房议价空间','待审核','2 小时')])}
+            ${column('爆款设计',1,[card('地价反超房价 + 法拍收敛','待选择','今天')])}
+            ${column('双稿创作',2,[card('光明科学城价值洼地？','部分完成','视频稿完成'),card('深圳刚需上车时机','写作中','公众号 63%')])}
+            ${column('人工核验',2,[card('深圳 Q2 土拍揭秘','阻塞','2 天',true),card('住宅价格指数与城市分化','待人工','4 小时')])}
+            ${column('发布/复盘',3,[card('深圳房价连涨三个月','待复盘','今天'),card('豪宅税线调整','视频已发','公众号待发'),card('学区房逻辑变化','已归档','7 天前')])}
+          </section>`,
+      },
+      inbox: {
+        group:'进料与选题', title:'素材 Inbox',
+        subtitle:'只显示尚未进入标准处理流程的新素材。快速选题完成后，素材仍会归档并执行轻量提取。',
+        actions:[['刷新 Inbox',''],['用所选素材快速选题','primary']],
+        html: () => `<div class="grid-2">
+          <section class="panel"><div class="panel-head"><span class="panel-title">新素材</span><span class="badge info">4 份</span><span class="spacer"></span><span class="muted">已选择 2 份</span></div><div class="list">
+            ${inboxRow('深圳市 2026 年第二季度土地市场交易情况','政府官网 HTML · 2026-08-14',true,'房地产')}
+            ${inboxRow('2026 年 7 月深圳房地产市场运行情况','住建局 PDF · 2026-08-13',true,'房地产')}
+            ${inboxRow('财富与命运：资产性收入的复利逻辑','Markdown · 2026-08-12',false,'财商')}
+            ${inboxRow('家庭教育中的边界感','Word · 2026-08-12',false,'小孩教育')}
+          </div></section>
+          <section class="stack">
+            <div class="next-action"><div class="eyebrow">快速通道</div><h2>使用 2 份新素材生成候选角度</h2><p>只使用当前所选 Inbox 素材。没有新素材时，不会擅自改用库内旧材料。</p><button class="btn primary" data-page="topics" data-ai="快速选题">生成 3–5 个候选角度</button></div>
+            <section class="panel"><div class="panel-head"><span class="panel-title">处理承诺</span></div><div class="panel-body muted"><div class="stack"><div>1. 选题后创建内容任务</div><div>2. 创作核验完成后归档原素材</div><div>3. 每份素材提取 1–3 个复用要素</div><div>4. 累计 5 份时提醒批量原子化</div></div></div></section>
+          </section>
+        </div>`,
+      },
+      topics: {
+        group:'进料与选题', title:'快速选题与候选确认',
+        subtitle:'AI 负责提供角度、证据锚点和风险；你负责确认哪一个进入正式生产。',
+        actions:[['重新生成候选',''],['确认所选角度','human']],
+        html: () => `<div class="row wrap" style="margin-bottom:12px"><span class="badge ai">AI 已生成 4 个候选</span><span class="badge human">等待你确认</span><span class="spacer"></span><span class="muted">来源：2 份 Inbox 新素材</span></div>
+          <div class="grid-3">
+            ${candidate('01','深圳 Q2 一块住宅用地都没有，楼市在等什么？','政策信号型','土拍结构 + 供应节奏','住宅用地成交为 0；需核验统计口径',true)}
+            ${candidate('02','土地市场先冷后热？别用单季数据预测房价','反常识型','地价与房价错位','适合建立“两个硬指标”框架',false)}
+            ${candidate('03','新房成交回暖，为什么开发商仍然不急着拿地？','矛盾冲突型','成交 vs 拿地','需补开发商资金端证据',false)}
+          </div>
+          <section class="panel" style="margin-top:13px"><div class="panel-head"><span class="panel-title">候选 01 的进入生产检查</span></div><div class="panel-body grid-equal"><div class="stack">${kv('主题','深圳土拍与供地节奏')}${kv('建议形式','视频号 + 公众号双稿')}${kv('时效窗口','72 小时')}${kv('历史去重','未发现同角度已发布内容')}</div><div class="stack">${kv('核心证据','深圳市政府官网季度土拍数据')}${kv('事实边界','不能由“零成交”直接推出房价上涨')}${kv('人设角度','不喊涨跌，只教判断信号')}${kv('风险','需要明确流拍、未挂牌、未成交的区别')}</div></div><div class="panel-body" style="border-top:1px solid var(--line)"><button class="btn human" data-confirm="topic">确认这个角度并创建任务</button></div></section>`,
+      },
+      task: {
+        group:'内容生产', title:'内容任务详情',
+        subtitle:'一张任务卡聚合来源、关卡、双平台状态与恢复记录，不复制各资产正文。',
+        actions:[['在 Obsidian 打开任务文件',''],['执行下一步','primary']],
+        html: () => `${stagebar(4)}<div class="grid-2">
+          <section class="panel"><div class="panel-head"><span class="panel-title">深圳 Q2 土拍：一块住宅用地都没有，什么信号？</span><span class="spacer"></span><span class="badge human">人工核验</span></div><div class="panel-body">
+            <div class="grid-equal"><div>${kv('任务 ID','content-task-20260813-shenzhen-q2-land')}${kv('当前阶段','human_review')}${kv('修订号','revision 4')}</div><div>${kv('优先级','高')}${kv('进入阶段','2026-08-13 16:20')}${kv('下一步','完成双平台独立核验')}</div></div>
+            <div class="rule"></div><div class="panel-title">关联资产</div>
+            ${assetRow('来源素材','深圳 Q2 土拍信息等 3 份','已定位')}${assetRow('内容 Brief','深圳 Q2 土拍揭秘 - Brief.md','已通过')}${assetRow('爆款设计','深圳 Q2 土拍揭秘 - 爆款设计.md','已通过')}${assetRow('视频号稿','深圳 Q2 土拍揭秘 - 视频号口播稿.md','待核验')}${assetRow('公众号稿','深圳 Q2 土拍揭秘 - 公众号文稿.md','待核验')}
+          </div></section>
+          <section class="stack"><div class="next-action"><div class="eyebrow">下一步只有一件事</div><h2>完成视频号与公众号的独立核验</h2><p>两个平台分别记录检查项与文件哈希。任一文件修改后，其审核立即失效。</p><button class="btn human" data-page="review">打开人工核验清单</button></div>
+            <section class="panel"><div class="panel-head"><span class="panel-title">平台状态</span></div><div class="panel-body">${platformStatus('视频号','review','待核验')}${platformStatus('公众号','review','待核验')}</div></section>
+          </section></div>`,
+      },
+      brief: {
+        group:'内容生产', title:'Brief 生成与审核',
+        subtitle:'生成结果先进入预览；接受后才写入正式 Markdown。AI 不能把 Brief 标记为审核通过。',
+        actions:[['查看来源范围',''],['AI 重新生成','primary']],
+        html: () => `<div class="grid-2">
+          <section><div class="editor-toolbar"><button class="tool">H1</button><button class="tool">B</button><button class="tool">•</button><span class="spacer"></span><span class="badge ai">AI 草稿 v2</span></div><article class="editor"><h2>深圳 Q2 土拍：一块住宅用地都没有，什么信号？</h2><h3>目标与受众</h3><p>面向正在判断深圳楼市方向、但容易被单一数据带节奏的自住与改善型购房者。</p><h3>核心观点</h3><p>住宅用地零成交不是看涨或看跌结论，而是供地、库存和房企拿地意愿之间的一个观察窗口。</p><h3>证据锚点</h3><p><span class="source-anchor">深圳市政府官网：2026 年第二季度土地市场交易情况</span></p><h3>事实边界</h3><p>必须区分“没有挂牌”“挂牌后流拍”“成交为零”；不得用单季数据直接预测房价。</p><h3>双平台差异</h3><p>视频号先用反常识 Hook；公众号补充口径、历史对比和读者自查表。</p></article></section>
+          <section class="stack"><div class="next-action"><div class="eyebrow">人工审核关卡</div><h2>Brief 还差 1 项确认</h2><p>统计口径表述仍需要你确认，AI 检查只能给建议。</p><button class="btn" data-ai="补全 Brief"><span class="badge ai">AI</span>补充风险提示</button><button class="btn human" data-confirm="brief">我已核验，批准 Brief</button></div>
+            <section class="panel"><div class="panel-head"><span class="panel-title">审核要点</span></div><div class="panel-body checklist">${check('目标受众明确',true)}${check('核心观点只有一个',true)}${check('证据可追溯',true)}${check('统计口径准确',false)}${check('双平台差异明确',true)}</div></section></section>
+        </div>`,
+      },
+      viral: {
+        group:'内容生产', title:'爆款设计与方案选择',
+        subtitle:'比较 Hook、标题、情绪曲线和风险，不把“爆款”简化成夸张标题。',
+        actions:[['AI 再生成 1 组',''],['确认方案 B','human']],
+        html: () => `<div class="grid-3">
+          ${viralPlan('A','数据反常识','深圳 Q2 一块住宅地都没有，房价却不一定跌','信息密度高；适合公众号','容易让视频前 3 秒过重',false)}
+          ${viralPlan('B','错误认知纠偏','一块住宅地都没卖，不代表深圳要断供','结论清楚；最符合“不喊涨跌”人设','必须在 10 秒内讲清统计口径',true)}
+          ${viralPlan('C','双指标框架','看懂深圳楼市企稳，别只盯成交量','可沉淀长期方法论','与本次新素材的时效连接较弱',false)}
+        </div>
+        <section class="panel" style="margin-top:13px"><div class="panel-head"><span class="panel-title">方案 B 的情绪曲线</span><span class="badge human">待选择</span></div><div class="panel-body"><div class="stagebar"><div class="stage-step done"><span class="step-dot"></span>误解</div><div class="stage-step done"><span class="step-dot"></span>反转</div><div class="stage-step active"><span class="step-dot"></span>解释</div><div class="stage-step"><span class="step-dot"></span>判断框架</div><div class="stage-step"><span class="step-dot"></span>行动建议</div></div><div class="grid-equal"><div>${kv('视频号 Hook','“先别急着说深圳没地了。”')}${kv('公众号标题','《一块住宅地都没卖，深圳楼市在释放什么信号？》')}</div><div>${kv('信息承诺','教你区分三个完全不同的零成交原因')}${kv('合规边界','不预测涨跌，不作投资收益承诺')}</div></div><button class="btn human" style="margin-top:12px" data-confirm="viral">选定方案 B，进入双稿创作</button></div></section>`,
+      },
+      editor: {
+        group:'内容生产', title:'视频号稿与公众号稿双栏创作',
+        subtitle:'共享同一核心观点和证据，分别维护平台结构、审核状态和版本。',
+        actions:[['查看共同证据',''],['AI 修改所选稿件','primary']],
+        html: () => `<div class="row wrap" style="margin-bottom:10px"><span class="badge success">共同证据已锁定</span><span class="badge info">视频号 draft v3</span><span class="badge human">公众号待确认修改</span><span class="spacer"></span><button class="btn small" data-ai="双稿事实检查"><span class="badge ai">AI</span>检查两稿事实一致性</button></div>
+          <div class="dual-tabs"><button class="btn small primary" data-dual="video">视频号</button><button class="btn small" data-dual="article">公众号</button></div>
+          <div class="dual-editor" data-active="video">
+            <section class="platform-pane"><div class="platform-head"><h2>视频号口播稿</h2><span class="spacer"></span><span class="badge info">draft</span><span class="mono muted">482 字</span></div><div class="editor-toolbar"><button class="tool">B</button><button class="tool">撤销</button><span class="spacer"></span><span class="badge ai">AI 上次修改 3 段</span></div><article class="editor"><h2>一块住宅地都没卖，不代表深圳要断供</h2><p>先别急着说深圳没地了。</p><p>深圳今年第二季度的土拍里，一块住宅用地都没有成交。但这句话，至少可能对应三种完全不同的情况。</p><p>第一，没有供地；第二，有地但没有成交；第三，供地节奏主动后移。</p><p>所以真正要看的不是“零”这个数字，而是库存、供地计划和房企拿地意愿能不能对上。</p><p>如果你在深圳买房，这个指标该怎么用？记住：它是供应端信号，不是房价预测器。</p></article></section>
+            <section class="platform-pane article"><div class="platform-head"><h2>公众号文章</h2><span class="spacer"></span><span class="badge human">修改待接受</span><span class="mono muted">1,862 字</span></div><div class="editor-toolbar"><button class="tool">H2</button><button class="tool">B</button><button class="tool">链接</button><span class="spacer"></span><span class="badge ai">AI 预览</span></div><article class="editor"><h2>一块住宅地都没卖，深圳楼市在释放什么信号？</h2><p class="muted">摘要：土拍“零成交”不是答案，它只是一个需要拆口径的信号。</p><h3>先把“零成交”说清楚</h3><p>在讨论影响之前，要先区分没有挂牌、流拍和成交节奏后移。三种情况的含义完全不同。</p><h3>为什么不能直接推出房价涨跌</h3><p>土地供应影响未来供给，但价格还受库存、需求、信贷和板块结构影响。</p><h3>普通购房者怎么使用这个数据</h3><p>把它放进一张判断表：看板块库存、未来两年新增供应、同板块开发商拿地成本。</p><p><span class="source-anchor">数据来源：深圳市政府官方网站</span></p></article></section>
+          </div>`,
+      },
+      review: {
+        group:'内容生产', title:'人工核验清单',
+        subtitle:'AI 检查意见和人工放行严格分层；视频号与公众号各自绑定当前文件哈希。',
+        actions:[['AI 辅助检查',''],['查看审核证据','']],
+        html: () => `<div class="grid-equal">
+          <section class="platform-card"><header><strong>视频号</strong><span class="badge human">5 / 6</span><span class="spacer"></span><span class="mono muted">sha 7e3b…19ac</span></header><div class="body"><div class="checklist">${check('数字、日期与单位逐项核对',true,'AI 未发现冲突')}${check('政府来源可点击且对应原句',true)}${check('无投资收益或涨跌承诺',true)}${check('引用与版权边界清楚',true)}${check('符合波哥的人设与表达',true)}${check('逐句人工朗读验收',false,'必须由你完成')}</div><button class="btn human" style="margin-top:12px" data-confirm="videoReview">完成最后一项并放行视频号</button></div></section>
+          <section class="platform-card"><header><strong>公众号</strong><span class="badge human">4 / 7</span><span class="spacer"></span><span class="mono muted">sha b9c1…30d2</span></header><div class="body"><div class="checklist">${check('标题与正文承诺一致',true)}${check('数据与来源可追溯',true)}${check('观察、推断和建议分开',true)}${check('引用与图片版权清楚',true)}${check('段落与小标题便于阅读',false)}${check('广告与合规用语检查',false)}${check('逐段人工核验',false)}</div><button class="btn human" style="margin-top:12px" disabled>完成剩余 3 项后放行</button></div></section>
+        </div><div class="notice visible info" style="margin-top:13px"><span class="notice-mark">AI</span><div><div class="notice-title">AI 辅助意见不是审核结论</div><div class="notice-copy">AI 可以标出疑点，但只有你勾选全部检查项并确认后，平台状态才会进入 ready。</div></div></div>`,
+      },
+      publish: {
+        group:'发布闭环', title:'双平台发布登记',
+        subtitle:'只记录已经发生的发布事实。未发布不填日期和链接，跳过必须由你填写原因。',
+        actions:[['查看 ready 内容',''],['保存发布事实','human']],
+        html: () => `<div class="grid-equal">
+          <section class="platform-card"><header><strong>视频号</strong><span class="badge success">ready</span></header><div class="body form-grid"><div class="field"><label>平台状态</label><select><option>ready</option><option>published</option></select></div><div class="field"><label>真实发布日期</label><input class="input" type="date" value="2026-08-14"></div><div class="field full"><label>发布链接</label><input class="input" value="https://channels.weixin.qq.com/example"></div><div class="field full"><label>记录依据</label><input class="input" value="用户确认已发布"></div><div class="field full"><button class="btn human" data-confirm="publishVideo">确认视频号已实际发布</button></div></div></section>
+          <section class="platform-card"><header><strong>公众号</strong><span class="badge human">ready · 尚未发布</span></header><div class="body form-grid"><div class="field"><label>平台状态</label><select><option>ready</option><option>published</option><option>skipped</option></select></div><div class="field"><label>发布日期</label><input class="input" type="date" placeholder="发布后填写"></div><div class="field full"><label>发布链接</label><input class="input" placeholder="发布后填写真实链接"></div><div class="field full"><label>若跳过，填写原因</label><textarea placeholder="只有选择 skipped 时必填"></textarea></div><div class="field full"><button class="btn" disabled>等待真实发布</button></div></div></section>
+        </div><div class="notice visible warn" style="margin-top:13px"><span class="notice-mark">!</span><div><div class="notice-title">任务仍停留在 publishing</div><div class="notice-copy">视频号已发布不代表双平台完成。公众号必须 published 或由你明确 skipped 后，才可进入复盘。</div></div></div>`,
+      },
+      retrospective: {
+        group:'发布闭环', title:'数据录入与复盘',
+        subtitle:'数据缺失写“未采集”，不能以 0 代替；复盘必须拆开观察、推断和下一轮实验。',
+        actions:[['导入已有数据',''],['AI 生成复盘草稿','primary']],
+        html: () => `<div class="metric-strip">${metric('视频号播放','12,460','采集于 08-14')}${metric('3 秒留存','72%','高于近 5 条')}${metric('公众号阅读','未采集','等待后台数据')}${metric('新增关注','86','双平台合计')}</div>
+          <div class="grid-2"><section class="panel"><div class="panel-head"><span class="panel-title">真实数据</span><span class="badge info">部分完成</span></div><div class="panel-body form-grid"><div class="field"><label>视频号播放量</label><input class="input" value="12460"></div><div class="field"><label>3 秒留存</label><input class="input" value="72%"></div><div class="field"><label>完播率</label><input class="input" value="31%"></div><div class="field"><label>视频数据来源</label><input class="input" value="视频号后台截图"></div><div class="field"><label>公众号阅读量</label><input class="input" value="未采集"></div><div class="field"><label>公众号采集日期</label><input class="input" value="未采集"></div></div></section>
+          <section class="panel"><div class="panel-head"><span class="panel-title">结构化复盘</span><span class="badge ai">AI 草稿</span></div><div class="panel-body stack">${reviewBlock('观察','前 3 秒留存高于近 5 条内容；评论集中在“零成交口径”。')}${reviewBlock('推断','反常识开场有效，但观众最关心的是如何区分三种零成交。')}${reviewBlock('下一轮实验','保留纠偏式 Hook，把三种口径做成 15 秒内的可视化判断框架。')}<button class="btn human" data-confirm="retrospective">确认复盘并触发归档检查</button></div></section></div>`,
+      },
+      recovery: {
+        group:'安全与设置', title:'文件冲突与崩溃恢复',
+        subtitle:'系统只在旧哈希或新哈希可确定时继续；出现第三种状态时停止，并让你看清差异。',
+        actions:[['重新扫描恢复记录',''],['导出诊断包','']],
+        html: () => `<div class="notice visible error"><span class="notice-mark">!</span><div><div class="notice-title">检测到外部修改，自动恢复已停止</div><div class="notice-copy">公众号稿当前哈希既不等于写入前，也不等于待写入版本。系统不会覆盖它，也不会静默回滚。</div></div></div>
+          <div class="grid-2"><section class="panel"><div class="panel-head"><span class="panel-title">操作 operation-20260814-1042</span><span class="badge danger">需要人工处理</span></div><div class="panel-body"><div class="recovery-ledger"><div class="ledger-row ledger-head"><span>状态</span><span>目标文件</span><span>旧哈希</span><span>新哈希</span><span>判断</span></div><div class="ledger-row"><span class="badge success">applied</span><span>视频号口播稿.md</span><span class="hash">7e3b…19ac</span><span class="hash">82aa…61b0</span><span>等于新哈希</span></div><div class="ledger-row"><span class="badge danger">conflict</span><span>公众号文稿.md</span><span class="hash">b9c1…30d2</span><span class="hash">ea21…7f99</span><span>第三种哈希</span></div><div class="ledger-row"><span class="badge neutral">prepared</span><span>内容任务.md</span><span class="hash">rev 4</span><span class="hash">rev 5</span><span>尚未提交</span></div></div><div class="rule"></div>${kv('发现时间','2026-08-14 10:42:18')}${kv('可能来源','Obsidian Sync 或外部编辑器')}${kv('安全边界','正式文件未被覆盖；恢复记录保留')}</div></section>
+          <section class="stack"><div class="next-action"><div class="eyebrow">推荐动作</div><h2>先比较公众号稿的三个版本</h2><p>把“当前外部版本”“写入前快照”“AI 待写入版本”并排比较，再决定保留或合并。</p><button class="btn human" data-confirm="recovery">打开三方差异并人工选择</button></div><section class="panel"><div class="panel-head"><span class="panel-title">安全可用的动作</span></div><div class="panel-body stack"><button class="btn">保留外部版本，放弃本次 AI 修改</button><button class="btn">手工合并后继续提交任务</button><button class="btn danger">回滚已应用的视频稿</button><div class="help">只有全部旧快照有效且当前文件仍等于新哈希时，回滚才会开放。</div></div></section></section></div>`,
+      },
+      settings: {
+        group:'安全与设置', title:'AI、密钥与规则设置',
+        subtitle:'设置清楚网络边界、人工门槛与恢复保留期；密钥只进入 Obsidian SecretStorage。',
+        actions:[['验证全部设置',''],['保存设置','primary']],
+        html: () => `<div class="grid-2"><section class="stack">
+          <section class="panel"><div class="panel-head"><span class="panel-title">AI 连接</span><span class="badge success">已连接</span></div><div class="panel-body form-grid"><div class="field full"><label>API 提供方</label><select><option>OpenAI API</option></select></div><div class="field full"><label>API 密钥</label><div class="row"><input class="input" style="flex:1" value="sk-proj-••••••••••••••••9Q"><button class="btn">重新验证</button></div><div class="help">保存在 Obsidian SecretStorage，不写入 data.json、Vault、日志或 Git。</div></div><div class="field"><label>生成模型</label><select><option>GPT-5</option></select></div><div class="field"><label>单次超时</label><select><option>120 秒</option></select></div></div></section>
+          <section class="panel"><div class="panel-head"><span class="panel-title">发送范围</span></div><div class="panel-body checklist">${check('只发送当前任务关联素材',true)}${check('发送动作所需模板与规则',true)}${check('排除敏感客户资料',true)}${check('允许默认上传整个 Vault',false,'此项始终禁止')}</div></section>
+        </section><section class="stack">
+          <section class="panel"><div class="panel-head"><span class="panel-title">人工关卡规则</span></div><div class="panel-body checklist">${check('选题进入正式生产前必须确认',true)}${check('Brief 通过必须人工确认',true)}${check('爆款方案必须人工选择',true)}${check('双平台稿分别人工核验',true)}${check('发布事实必须人工登记',true)}${check('AI 可以自动宣布审核通过',false,'固定禁止，不能开启')}</div></section>
+          <section class="panel"><div class="panel-head"><span class="panel-title">恢复与清理</span></div><div class="panel-body form-grid"><div class="field"><label>已完成恢复记录保留</label><select><option>7 天</option><option>14 天</option><option>30 天</option></select></div><div class="field"><label>自动清理</label><select><option>只清理 committed / rolled_back</option></select></div><div class="field full"><label>规则来源</label><input class="input" value="96-System/Guides/Content Production Workflow.md" readonly></div></div></section>
+        </section></div>`,
+      }
+    };
+
+    const stateDefs = {
+      normal:{kind:'',title:'',copy:''},
+      first_use:{kind:'info',title:'这是你第一次打开这个页面',copy:'系统会先解释当前页面的作用，并给出一个唯一的开始动作。不会用强制导览挡住操作。'},
+      empty:{replace:'empty'},
+      loading:{replace:'loading'},
+      ai_generating:{replace:'ai'},
+      ai_failed:{kind:'error',title:'AI 调用失败，正式文件没有变化',copy:'任务仍停在原阶段。你可以重试、查看错误，或继续人工编辑；不会重复创建同名资产。'},
+      missing_file:{kind:'error',title:'关联文件缺失',copy:'系统已停止阶段推进。请重新定位文件、从回收站恢复，或明确解除关联；不会创建空壳文件顶替。'},
+      external_change:{kind:'warn',title:'文件在操作期间被外部修改',copy:'写入已暂停。请先比较当前版本与待写入版本，再决定保留、合并或回滚。'},
+      review_invalid:{kind:'warn',title:'人工审核已失效',copy:'资产内容哈希与审核时不一致。旧审核记录保留作证据，但必须重新完成当前版本的核验。'},
+      key_error:{kind:'error',title:'密钥或权限不可用',copy:'AI 动作已禁用，但现有文件和人工编辑不受影响。请验证密钥、项目权限、余额或模型访问权限。'},
+      success:{kind:'success',title:'操作已完成并验证落盘',copy:'正式文件已重新读取并与目标哈希一致；任务修订号已更新。你可以继续下一关。'},
+      partial:{kind:'info',title:'本次操作只完成了一部分',copy:'已完成项已明确标记，未完成项没有被伪装成成功。平台和资产状态会继续分开显示。'},
+      confirm:{confirm:true}
+    };
+
+    const pageVerbs = {
+      onboarding:'完成知识库体检', today:'加载今日优先任务', pipeline:'加载流水线任务', inbox:'读取 Inbox 新素材', topics:'生成候选选题', task:'读取任务关联资产', brief:'生成 Brief 草稿', viral:'生成爆款设计', editor:'生成双平台稿', review:'执行辅助核验', publish:'登记发布事实', retrospective:'生成复盘草稿', recovery:'分析恢复记录', settings:'验证 AI 连接'
+    };
+
+    const flows = {
+      new:{name:'新素材快速生产',steps:[
+        ['inbox','normal','选择 2 份新素材，点击“快速选题”'],['topics','ai_generating','AI 仅使用所选新素材生成候选'],['topics','confirm','人工确认一个候选角度'],['brief','normal','检查证据与事实边界，批准 Brief'],['viral','confirm','比较方案并人工选择 Hook/标题'],['editor','partial','视频号稿完成，公众号修改待接受'],['review','confirm','分别完成双平台核验']
+      ]},
+      library:{name:'库内素材常规闭环',steps:[
+        ['topics','normal','从库内未用材料生成常规候选'],['task','normal','创建任务并核对来源关联'],['brief','confirm','人工批准 Brief'],['viral','confirm','人工选择爆款设计'],['editor','normal','生成并修改双平台稿'],['review','confirm','双平台分别核验'],['publish','partial','先登记一个平台的真实发布事实'],['retrospective','normal','录入真实数据并生成结构化复盘']
+      ]},
+      recovery:{name:'中断与冲突恢复',steps:[
+        ['brief','ai_generating','AI 已返回，正在准备待写入版本'],['recovery','external_change','检测到公众号稿出现第三种哈希'],['recovery','confirm','比较三方差异，人工选择恢复策略'],['recovery','success','恢复动作验证完成，任务未重复写入'],['editor','normal','回到双栏创作，继续未完成稿件']
+      ]}
+    };
+
+    let activePage = 'today';
+    let activeFlow = null;
+    let flowIndex = 0;
+
+    function healthItem(title, desc, state){ return `<div class="check-item ${state==='ok'?'checked':''}"><span class="check-icon"></span><div><div class="strong">${title}</div><div class="check-desc">${desc}</div></div><span class="badge ${state==='ok'?'success':'human'}">${state==='ok'?'通过':'待处理'}</span></div>`; }
+    function metric(label,value,note){ return `<div class="metric"><div class="metric-label">${label}</div><div class="metric-value">${value}<span class="metric-note">${note}</span></div></div>`; }
+    function todayRow(type,title,meta,action,page){ return `<div class="list-row"><span class="badge neutral">${type}</span><div><div class="list-title">${title}</div><div class="list-meta">${meta}</div></div><button class="btn small" data-page="${page}">${action}</button></div>`; }
+    function asset(label,value,type){ return `<div class="asset-row"><span class="asset-type">${label}</span><span class="asset-name">${value}</span><span class="badge ${type}">${type==='success'?'已完成':'待人工'}</span></div>`; }
+    function assetRow(type,name,status){ return `<div class="asset-row"><span class="asset-type">${type}</span><span class="asset-name">${name}</span><span class="badge ${status==='已通过'||status==='已定位'?'success':'human'}">${status}</span></div>`; }
+    function kv(label,value){ return `<div class="row" style="align-items:flex-start;padding:6px 0"><span class="muted" style="min-width:92px">${label}</span><span class="spacer">${value}</span></div>`; }
+    function platformStatus(name,status,label){ return `<div class="asset-row"><span class="asset-type">${name}</span><span class="mono">${status}</span><span class="badge human">${label}</span></div>`; }
+    function column(name,count,cards){ return `<div class="column"><div class="column-head"><strong>${name}</strong><span class="nav-count">${count}</span></div>${cards.join('')}</div>`; }
+    function card(title,state,time,blocked=false){ return `<div class="task-card ${blocked?'blocked':''}" data-page="task"><div class="title">${title}</div><span class="badge ${blocked?'danger':state.includes('人工')||state.includes('审核')||state.includes('选择')?'human':'neutral'}">${state}</span><div class="foot"><span>${time}</span><span>打开 →</span></div></div>`; }
+    function inboxRow(title,meta,selected,domain){ return `<div class="list-row selectable ${selected?'selected':''}" role="option" tabindex="0" aria-selected="${selected}"><span class="check-box"></span><div><div class="list-title">${title}</div><div class="list-meta">${meta}</div></div><span class="badge neutral">${domain}</span></div>`; }
+    function candidate(rank,title,pattern,promise,evidenceText,selected){ return `<article class="candidate ${selected?'selected':''}" role="radio" tabindex="0" aria-checked="${selected}"><span class="rank">候选 ${rank}</span><h3>${title}</h3><p>${pattern} · ${promise}</p><div class="evidence"><span class="muted">证据锚点：</span>${evidenceText}</div></article>`; }
+    function viralPlan(letter,type,hook,benefit,risk,selected){ return `<article class="candidate ${selected?'selected':''}"><span class="rank">方案 ${letter} · ${type}</span><h3>${hook}</h3><div class="rule"></div>${kv('优势',benefit)}${kv('风险',risk)}<button class="btn small ${selected?'primary':''}" style="margin-top:10px">${selected?'当前选择':'查看详情'}</button></article>`; }
+    function check(title,checked,note=''){ return `<div class="check-item ${checked?'checked':''}"><span class="check-icon"></span><div><div class="strong">${title}</div>${note?`<div class="check-desc">${note}</div>`:''}</div><span class="badge ${checked?'success':'human'}">${checked?'完成':'待人工'}</span></div>`; }
+    function reviewBlock(label,text){ return `<div><div class="badge neutral">${label}</div><div style="margin-top:6px;color:#d6dbe0">${text}</div></div>`; }
+    function stagebar(active){ const names=['选题','Brief','爆款设计','双稿创作','人工核验','发布','复盘']; return `<div class="stagebar">${names.map((n,i)=>`<div class="stage-step ${i<active?'done':i===active?'active':''}"><span class="step-dot"></span>${n}</div>`).join('')}</div>`; }
+
+    function renderSidebar(){
+      document.getElementById('sidebar').innerHTML = groups.map(g=>`<div class="nav-group"><div class="nav-title">${g.title}</div>${g.items.map(([id,label,key])=>`<button class="nav-item ${id===activePage?'active':''}" data-page="${id}"><span>${label}</span><span class="nav-key">${key}</span></button>`).join('')}</div>`).join('') + `<div class="sidebar-note">MVP 功能原型 v1<br>所有按钮仅演示产品行为，不会写入 Vault 或调用 AI。</div>`;
+    }
+
+    function renderPage(pageId, keepState=false){
+      activePage = pageId;
+      const page = pages[pageId];
+      renderSidebar();
+      document.getElementById('breadcrumb').textContent = `内容生产驾驶舱 / ${page.group}`;
+      document.getElementById('pageTitle').textContent = page.title;
+      document.getElementById('pageSubtitle').textContent = page.subtitle;
+      document.getElementById('pageActions').innerHTML = page.actions.map(([label,type])=>`<button class="btn ${type}">${label}</button>`).join('');
+      document.getElementById('pageContent').innerHTML = page.html();
+      document.getElementById('main').focus({preventScroll:true});
+      if(!keepState) document.getElementById('stateSelect').value='normal';
+      applyState(document.getElementById('stateSelect').value);
+    }
+
+    function applyState(state){
+      const def = stateDefs[state];
+      const notice = document.getElementById('stateNotice');
+      const replacement = document.getElementById('stateReplacement');
+      const content = document.getElementById('pageContent');
+      notice.className='notice'; notice.innerHTML='';
+      replacement.className='state-replacement'; replacement.innerHTML='';
+      content.style.display='';
+      document.getElementById('confirmSheet').classList.remove('visible');
+      if(state==='normal') return;
+      if(def.replace){
+        content.style.display='none'; replacement.classList.add('visible');
+        if(def.replace==='loading') replacement.innerHTML=`<div class="skeleton"><div class="sk short"></div><div class="sk med"></div><div class="sk block"></div><div class="sk"></div><div class="sk med"></div></div>`;
+        if(def.replace==='empty') replacement.innerHTML=`<div><div class="empty-illustration">EMPTY</div><h2>${pages[activePage].title}还没有内容</h2><p>${emptyCopy(activePage)}</p><button class="btn primary">${emptyAction(activePage)}</button></div>`;
+        if(def.replace==='ai') replacement.innerHTML=`<div><div class="spinner"></div><h2>${pageVerbs[activePage]}中</h2><p>正在读取当前任务允许的素材、模板与规则。正式文件尚未改变，你可以安全取消。</p><div class="progress"><i></i></div><div class="mono muted">步骤 3 / 5 · 生成预览</div><button class="btn ghost" style="margin-top:16px">取消并保留当前文件</button></div>`;
+        return;
+      }
+      if(def.confirm){ openConfirm('generic'); return; }
+      notice.classList.add('visible',def.kind);
+      notice.innerHTML=`<span class="notice-mark">${def.kind==='error'?'!':def.kind==='success'?'✓':def.kind==='warn'?'!':'i'}</span><div><div class="notice-title">${def.title}</div><div class="notice-copy">${def.copy}</div></div><div class="notice-actions">${stateActionButtons(state)}</div>`;
+      if(state==='success') showToast('成功｜写入后已重新读取验证，任务状态可继续推进。');
+    }
+
+    function stateActionButtons(state){
+      const map={ai_failed:['查看错误','重试'],missing_file:['解除关联','重新定位'],external_change:['打开差异','进入恢复'],review_invalid:['查看修改','重新核验'],key_error:['打开设置','验证密钥'],partial:['查看未完成项','继续处理'],first_use:['了解本页','开始']};
+      const a=map[state]; if(!a) return '';
+      return `<button class="btn small ghost">${a[0]}</button><button class="btn small ${state==='review_invalid'?'human':'primary'}">${a[1]}</button>`;
+    }
+    function emptyCopy(page){ const map={inbox:'请先把新素材放入 Inbox。系统不会擅自改用库内旧素材。',pipeline:'还没有内容任务。可以从库内素材或 Inbox 新素材创建第一条任务。',today:'今天没有等待处理的任务。你可以查看 Inbox，或从库内未用材料开始常规选题。',publish:'还没有进入 ready 的平台稿件。先完成各平台的人工核验。',retrospective:'还没有到达复盘时间的已发布内容。'}; return map[page]||'此页面暂时没有可显示的数据。系统会说明产生第一条数据的最短路径。'; }
+    function emptyAction(page){ const map={inbox:'打开 Inbox 目录',pipeline:'从素材创建任务',today:'查看新素材',publish:'查看待核验稿件',retrospective:'查看已发布内容'}; return map[page]||'开始第一步'; }
+
+    function openConfirm(kind){
+      const copy={
+        generic:['确认执行当前人工动作？','系统会记录你的确认、当前资产哈希、时间与检查清单版本。','状态只在写入并验证成功后推进；AI 不会代签。'],
+        mapping:['确认试点资产映射？','请确认这些来源、Brief、设计稿和双平台稿确实属于同一选题。','只会为 3 条试点建立链接与任务卡，不移动或改名原文件。'],
+        topic:['确认这个选题进入正式生产？','候选 01 将成为正式内容任务。确认前仍只是 AI 建议。','创建任务卡并关联 2 份新素材，进入 Brief 阶段。'],
+        brief:['确认 Brief 已核验通过？','请确认统计口径、核心观点、证据与事实边界都准确。','审核记录绑定当前 Brief 哈希；后续实质修改会使审核失效。'],
+        viral:['确认采用方案 B？','这会锁定本轮 Hook、标题、情绪曲线与双平台差异。','任务进入双稿创作；其他方案保留为备选，不删除。'],
+        videoReview:['确认视频号稿已逐句核验？','AI 检查不能替代你的朗读、事实与合规确认。','视频号状态进入 ready；公众号状态保持不变。'],
+        publishVideo:['确认视频号已经实际发布？','请只在平台发布成功且日期、链接真实时确认。','视频号进入 published；任务仍等待公众号独立完成或跳过。'],
+        retrospective:['确认复盘内容与数据？','缺失数据必须保持“未采集”，推断不能伪装成事实。','保存复盘，检查素材归档与轻量提取门槛。'],
+        recovery:['选择恢复策略前先看差异','当前外部版本不能被系统自动覆盖。','你的选择会生成新的恢复操作；原始快照与冲突记录继续保留。']
+      }[kind] || null;
+      document.getElementById('confirmTitle').textContent=copy[0];
+      document.getElementById('confirmCopy').textContent=copy[1];
+      document.getElementById('confirmImpact').textContent=copy[2];
+      document.getElementById('confirmSheet').classList.add('visible');
+      document.getElementById('confirmCancel').focus();
+    }
+
+    function showToast(text){ const t=document.getElementById('toast'); t.innerHTML=`<div class="row"><span class="badge success">已完成</span><strong>${text}</strong></div>`; t.classList.add('visible'); setTimeout(()=>t.classList.remove('visible'),3200); }
+
+    function handleHeaderAction(label){
+      if(label.includes('快速选题')) { document.getElementById('stateSelect').value='ai_generating'; renderPage('topics',true); return; }
+      if(label.includes('确认所选角度')) { openConfirm('topic'); return; }
+      if(label.includes('确认方案')) { openConfirm('viral'); return; }
+      if(label.includes('AI') || label.includes('生成')) { document.getElementById('stateSelect').value='ai_generating'; applyState('ai_generating'); return; }
+      if(label.includes('保存发布')) { openConfirm('publishVideo'); return; }
+      if(label.includes('保存设置')) { document.getElementById('stateSelect').value='success'; applyState('success'); return; }
+      if(label.includes('开始安全配置')) { renderPage('onboarding'); return; }
+      showToast(`${label}｜原型已记录这个操作入口。`);
+    }
+
+    function toggleChoice(el){
+      if(el.classList.contains('candidate')){
+        document.querySelectorAll('.candidate').forEach(x=>{x.classList.remove('selected');x.setAttribute('aria-checked','false');});
+        el.classList.add('selected'); el.setAttribute('aria-checked','true');
+      } else {
+        el.classList.toggle('selected'); el.setAttribute('aria-selected',String(el.classList.contains('selected')));
+      }
+    }
+
+    function startFlow(id){ activeFlow=id; flowIndex=0; document.getElementById('flowMenu').classList.remove('visible'); document.getElementById('flowbar').classList.add('visible'); renderFlowStep(); }
+    function renderFlowStep(){
+      const flow=flows[activeFlow], step=flow.steps[flowIndex];
+      document.getElementById('stateSelect').value=step[1];
+      renderPage(step[0],true);
+      document.getElementById('flowName').textContent=flow.name;
+      document.getElementById('flowIndex').textContent=`第 ${flowIndex+1} / ${flow.steps.length} 步`;
+      document.getElementById('flowAction').textContent=step[2];
+      document.getElementById('flowSteps').innerHTML=flow.steps.map((_,i)=>`<span class="flow-pill ${i<flowIndex?'done':i===flowIndex?'active':''}"></span>`).join('');
+      document.getElementById('flowPrev').disabled=flowIndex===0;
+      document.getElementById('flowNext').textContent=flowIndex===flow.steps.length-1?'完成演示':'下一步';
+    }
+    function closeFlow(){ activeFlow=null; document.getElementById('flowbar').classList.remove('visible'); document.getElementById('stateSelect').value='normal'; applyState('normal'); }
+
+    document.addEventListener('click', e=>{
+      const page=e.target.closest('[data-page]'); if(page){ renderPage(page.dataset.page); return; }
+      const ai=e.target.closest('[data-ai]'); if(ai){ document.getElementById('stateSelect').value='ai_generating'; applyState('ai_generating'); return; }
+      const confirm=e.target.closest('[data-confirm]'); if(confirm){ openConfirm(confirm.dataset.confirm); return; }
+      const dual=e.target.closest('[data-dual]'); if(dual){ const host=document.querySelector('.dual-editor'); if(host) host.dataset.active=dual.dataset.dual; document.querySelectorAll('[data-dual]').forEach(x=>x.classList.toggle('primary',x===dual)); return; }
+      const headerAction=e.target.closest('#pageActions .btn'); if(headerAction){ handleHeaderAction(headerAction.textContent.trim()); return; }
+      const selectable=e.target.closest('.list-row.selectable'); if(selectable){ toggleChoice(selectable); return; }
+      const candidateEl=e.target.closest('.candidate'); if(candidateEl){ toggleChoice(candidateEl); return; }
+    });
+    document.getElementById('stateSelect').addEventListener('change',e=>applyState(e.target.value));
+    document.getElementById('flowMenuButton').addEventListener('click',()=>{ const m=document.getElementById('flowMenu'); m.classList.toggle('visible'); document.getElementById('flowMenuButton').setAttribute('aria-expanded',m.classList.contains('visible')); });
+    document.querySelectorAll('[data-flow]').forEach(b=>b.addEventListener('click',()=>startFlow(b.dataset.flow)));
+    document.getElementById('flowPrev').addEventListener('click',()=>{ if(flowIndex>0){flowIndex--;renderFlowStep();} });
+    document.getElementById('flowNext').addEventListener('click',()=>{ const flow=flows[activeFlow]; if(flowIndex<flow.steps.length-1){flowIndex++;renderFlowStep();}else{showToast('三条链中的当前演示已走通。');closeFlow();} });
+    document.getElementById('flowClose').addEventListener('click',closeFlow);
+    document.getElementById('confirmCancel').addEventListener('click',()=>{document.getElementById('confirmSheet').classList.remove('visible');document.getElementById('stateSelect').value='normal';});
+    document.getElementById('confirmAccept').addEventListener('click',()=>{document.getElementById('confirmSheet').classList.remove('visible');document.getElementById('stateSelect').value='success';applyState('success');});
+    document.addEventListener('keydown',e=>{
+      if(e.key==='Escape'){ document.getElementById('confirmSheet').classList.remove('visible'); document.getElementById('flowMenu').classList.remove('visible'); }
+      if((e.key==='Enter'||e.key===' ') && (e.target.matches('.candidate')||e.target.matches('.list-row.selectable'))){ e.preventDefault(); toggleChoice(e.target); }
+    });
+
+    const initial = new URLSearchParams(location.search);
+    const initialPage = pages[initial.get('page')] ? initial.get('page') : 'today';
+    const initialState = stateDefs[initial.get('state')] ? initial.get('state') : 'normal';
+    document.getElementById('stateSelect').value = initialState;
+    renderPage(initialPage, true);
+  </script>
+</body>
+</html>
