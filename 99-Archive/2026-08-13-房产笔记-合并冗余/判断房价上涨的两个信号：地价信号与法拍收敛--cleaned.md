@@ -5,7 +5,7 @@ url: https://weixin.qq.com/sph/ASVyCBpX0m
 saved: 2026-08-13 12:14:47
 tags:
   - 笔记同步助手
-id: 84e266ba-4388-4fce-b90e-d8aef74bf0a8
+id: a3753fd8-9a97-4642-94ef-23cafdaa7fb3
 
 workflow/status: "waiting-approval"
 cleaned_at: "2026-08-13"

@@ -147,3 +147,20 @@
   - 原规则点 6 修订：财商等跨领域内容不再并入 房地产；涉及具体房贷/房产资产配置的内容通过 topics 关联 房地产。
   - 既有财商笔记的 domain 由 房地产 迁移为 财商（逐份经用户确认后执行）。
 - 影响：本决策推翻 ADR-017 中以「房地产＋小孩教育」列举的顶级主题域范围，以及原规则点 6「财商主领域归房地产」；不改变三层内容模型结构，财商在 ① 层与 房地产 同级。受控 domain 新增须同步 Metadata Schema 与 Folder Responsibilities。
+
+## ADR-019：内容生产采用任务编排、资产正文与哈希审核的分层真相
+
+- 状态：已接受
+- 日期：2026-08-14（Asia/Shanghai）
+- 背景：`05-Content` 已存在 `content-brief`、`viral-design` 和 `script`，但正式 Metadata Schema 尚未登记后两者，也没有聚合一条选题全流程的任务实体。部分旧 Brief 使用 `brief` 状态，部分爆款设计缺少 status；若插件根据文件名、文件存在或历史模糊状态推断审核与发布，会制造不可追溯的假状态。
+- 决策：
+  - 新增受控类型 `content-task`、`viral-design`、`script`；继续使用 `content-brief`。`topic-candidates` 与旧 `brief` 类型只读兼容，不作为新的正式写入类型。
+  - `content-task.status` 使用 `active`、`blocked`、`completed`、`archived`；`current_stage` 独立使用 `inbox`、`idea`、`brief`、`viral_design`、`drafting`、`human_review`、`publishing`、`retrospective`、`archived`。
+  - `content-brief` 与 `viral-design` 的 canonical status 使用 `draft`、`review`、`approved`、`archived`；`script` 使用 `draft`、`review`、`ready`、`published`、`skipped`、`archived`。双平台分别使用 `not_started`、`draft`、`review`、`ready`、`published`、`skipped`，不得以一端状态推断另一端。
+  - 任务文件保存 `schema_version`、`revision`、`current_stage`、`source_ids`、资产 ID、平台状态与审核记录。稳定 ID 是正式关联；路径和 Obsidian 内部链接是可重建导航，不是关联真相。
+  - 任务文件负责流程阶段、revision 和平台编排；资产文件负责正文及自身 status；审核记录只对指定 `asset_id` 的精确原始字节 SHA-256 有效。资产发生任何字节变化后，旧审核立即失效。
+  - 审核时先写入并回读资产的最终 canonical 状态，再计算最终字节哈希，最后把审核记录写入任务；禁止对即将继续修改的旧字节先行签名。
+  - 旧 `content-brief.status: brief` 只能读取为待确认历史状态，不能自动视为 approved；旧中文 platform 值可兼容读取，新写入统一使用 `video_channel` 和 `wechat_article`；当前任务关联资产出现缺 status、未知 type/status 或重复 ID 时 fail closed，无关旧文件只进入体检报告。
+  - 首次运行只报告不合规项。批量迁移禁止；只有用户确认过逐字段 diff 的试点任务可以写入，且必须幂等。
+  - 多文件写入必须经过持久化恢复协议；MVP 禁止删除正式文件，以 archived/skipped 表达退出。
+- 影响：编码前必须把本决策同步到 `Metadata Schema.md` 并用 fixtures 验证兼容读取；插件不得从文件名或文件存在性推断阶段、审核或发布。现有文件不因本 ADR 自动修改。

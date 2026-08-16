@@ -25,3 +25,4 @@ credentials.json
 .obsidian/plugins/
 .obsidian/.obsidian-sync-helper-backup/
 .claudian/
+.gstack/

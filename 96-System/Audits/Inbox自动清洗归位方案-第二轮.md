@@ -1,4 +1,4 @@
-﻿---
+---
 id: "proposal-inbox-auto-pipeline-v2"
 type: "proposal"
 title: "Inbox 定时清洗与归位自动化（V2 · 第二轮）"

@@ -518,3 +518,54 @@
 - 正文、YAML、标签与其他笔记：SKIPPED（0 处修改）
 - Git add、commit、push：SKIPPED
 - 下一步：若要提高资料可用性，逐项核验招生、奖学金、学费和招聘规则的时效；未经确认不创建新的 Topic Hub 或原子笔记。
+
+## 内容生产驾驶舱工程架构评审（2026-08-14 09:43:28 +08:00）
+
+- 产品方向：APPROVED
+- MVP UX/UI：APPROVED
+- 工程架构评审：APPROVED
+- ADR-019：ACCEPTED（任务编排、资产正文、哈希审核分层真相）
+- 插件源码目录：LOCKED（`E:/obsidian-kb-v2-dev/plugins/content-production-dashboard/`）
+- 试点映射：VERIFIED（17/17 既有 ID 唯一命中；3 个目标 task ID 均未创建）
+- 恢复协议：APPROVED（不可变 manifest、CAS、第三哈希人工修复、MVP 无 delete）
+- 测试矩阵：APPROVED（74 条场景）
+- 评审时元数据债务：4 组重复 ID；7 份 viral-design 缺 status；系统计划文档 type 未注册
+- 代码仓库：VERIFIED CLEAN
+- Metadata Schema 实际修改：0（留给 ENG-01，禁止评审阶段夹带迁移）
+- 插件代码、任务文件、业务知识笔记修改：0
+- Git add、commit、push：SKIPPED
+- 下一步：用户授权进入 ENG-00 后，建立插件脚手架与独立测试 Vault；不得直接从全页面编码开始。
+
+## 内容生产元数据定向修复（2026-08-14 09:50:54 +08:00）
+
+- 修复范围：用户指定的 4 组重复 ID 与 7 份缺 status 的 viral-design
+- 重复 ID 处理：4 份原始件保留导入 ID；3 份正式 cleaned 与 1 份归档 cleaned 使用新 UUID
+- 外部 ID 引用：0（修复前仅各自 frontmatter 命中）
+- viral-design 状态：7/7 补为 `review`；补为 `approved` 0
+- 全 Vault 重复 ID：0 组
+- viral-design 总数：11；缺 status：0；本次 review：7
+- 正文字符、标题、文件路径、内部链接：0 处修改；文本补丁为 7 份原无结尾换行的文件补入 EOF 换行，不改变可见正文
+- 系统计划文档 `type: plan`：本次不处理
+- Git add、commit、push：SKIPPED
+- 下一步：执行最终引用、Schema 兼容和改动范围验证；通过后再决定是否进入 ENG-00。
+
+## 内容生产驾驶舱 ENG-00 工程脚手架（2026-08-14 10:18:35 +08:00）
+
+- 插件源码：CREATED（`E:/obsidian-kb-v2-dev/plugins/content-production-dashboard/`）
+- 独立测试 Vault：CREATED（`E:/obsidian-kb-plugin-test-vault/`）
+- 主 Vault 测试标记：ABSENT
+- 插件版本：`0.0.1`；Obsidian 最低版本：`1.13.4`；desktop-only：true
+- 依赖：142 packages；`npm audit` 0 vulnerabilities；精确版本与 package-lock 已生成
+- 干净安装：VERIFIED（`npm ci`）
+- Lint：VERIFIED（TypeScript、测试和 Node 脚本；0 warnings）
+- Unit tests：VERIFIED（2 files，3/3 tests）
+- TypeScript 与生产构建：VERIFIED
+- 发布工件：VERIFIED（`main.js`、`manifest.json`、`styles.css`）
+- 测试 Vault 安装：VERIFIED
+- 测试 Vault 卸载：VERIFIED（插件目录与启用项均清除）
+- 测试 Vault 最终重装：VERIFIED（3 个工件与源码构建 SHA-256 一致）
+- 主 Vault 安全阀：VERIFIED（显式指向 `E:/波哥Obsidian` 返回拒绝；插件目录前后均不存在）
+- GitHub Actions：CREATED（路径隔离的 Windows Node 24 `npm ci + verify`；YAML 1.2 语法验证通过；`checkout@v6`、`setup-node@v7`）
+- 主 Vault 业务笔记、Metadata Schema、任务文件：0 处修改
+- Git add、commit、push：SKIPPED
+- 下一步：ENG-01——把 ADR-019 同步进 Metadata Schema，并实现只读知识库体检；不得夹带迁移。

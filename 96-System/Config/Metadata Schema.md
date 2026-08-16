@@ -1,4 +1,4 @@
-# Metadata Schema
+﻿# Metadata Schema（版本：2026-08-14-v2）
 
 ## 目标
 
@@ -51,6 +51,9 @@
 - `decision`
 - `prompt`
 - `content-brief`
+- `content-task`
+- `viral-design`
+- `script`
 - `topic-hub`
 - `ai-memory`
 - `audit-report`
@@ -67,6 +70,9 @@
 | `decision` | `proposed`, `accepted`, `rejected`, `superseded` |
 | `prompt` | `draft`, `active`, `deprecated`, `archived` |
 | `content-brief` | `idea`, `brief`, `draft`, `review`, `published`, `repurpose`, `archived` |
+| `content-task` | `active`, `blocked`, `completed`, `archived` |
+| `viral-design` | `draft`, `review`, `approved`, `archived` |
+| `script` | `draft`, `review`, `ready`, `published`, `skipped`, `archived` |
 | `topic-hub` | `active`, `deprecated`, `archived` |
 | `ai-memory` | `draft`, `active`, `deprecated`, `archived` |
 | `audit-report` | `draft`, `completed`, `archived` |
@@ -100,10 +106,23 @@
 - `decision`：正文必须记录背景、决策、替代方案与影响。
 - `project`：只有目标、成功标准和结束条件均明确时才能实例化；正文必须记录当前状态、已完成事项、待办、下一步、风险、阻塞与关键决策。
 - `prompt`：正文必须记录使用场景、输入要求、输出格式、推荐模型、版本、最后测试日期、测试样例、已知限制、失败案例、评价标准和变更记录；不得包含 Token、密码、Cookie、API Key 或私人数据。
-- `content-brief`：正文必须记录目标平台、目标受众、核心观点、证据来源、内容形式、当前状态、发布日期、发布链接、复用计划、表现数据与复盘结论。平台尚未正式填写时使用“待补充”，不新增平台目录或 YAML 枚举。
+- `content-brief`：正文必须记录目标平台、目标受众、核心观点、证据来源、内容形式、当前状态、发布日期、发布链接、复用计划、表现数据与复盘结论。平台尚未正式填写时使用"待补充"，不新增平台目录或 YAML 枚举。
+- `content-task`：任务编排实体，负责流程阶段、revision 和平台编排。`current_stage` 独立使用 `inbox`、`idea`、`brief`、`viral_design`、`drafting`、`human_review`、`publishing`、`retrospective`、`archived`。关联资产通过 `source_ids` 和资产 ID 建立。仅在插件启用或需要多资产编排时实例化；当前人工流程不强制使用。
+- `viral-design`：爆款设计工件，关联到 `content-brief`。正文必须包含 3 必过项（Hook 设计、标题备选、情绪曲线）和 4 可选项（或标注缺失原因）。
+- `script`：平台稿件，关联到 `content-brief` 和 `viral-design`。双平台分别使用 `platform` 字段标注（`video_channel` 或 `wechat_article`）。正文必须包含人设一致性检查和核验清单。
 - `topic-hub`：只有真实笔记达到导航需要时才实例化；本阶段不创建 Topic Hub。
 - `ai-memory`：`source` 或 `related` 至少一个非空，`confidence` 必填；禁止凭据和未经授权隐私。
 - `audit-report`：正文必须包含范围、证据、结论和阻塞项。
+
+## 只读兼容类型
+
+以下类型在 Vault 中已存在文件，但 ADR-019 规定不作为新的正式写入类型。体检脚本将其识别为合法类型，新笔记禁止使用。
+
+- `topic-candidates`：选题候选清单。ADR-019 已将其功能合并到 `content-task` 流程中。已有文件保留，新选题候选应使用 `content-task` + `current_stage: idea` 表达。
+
+## ADR-019 兼容性说明
+
+ADR-019 定义了 `content-task` 作为任务编排实体的替代方案。当前 `content-brief.status` 的 `idea` 和 `brief` 值在 `content-task` 启用后可能迁移为 `content-task.current_stage`。在 `content-task` 尚未大规模启用前，`content-brief.status` 保留当前值不变。迁移方案详见 ADR-019。
 
 ## 更新规则
 

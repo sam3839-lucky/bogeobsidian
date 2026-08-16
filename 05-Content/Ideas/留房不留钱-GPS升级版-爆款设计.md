@@ -2,6 +2,7 @@
 id: "viral-design-20260813-keep-house-not-cash"
 type: "viral-design"
 title: "留房不留钱-GPS升级版 - 爆款设计"
+status: "review"
 created: "2026-08-13"
 related_brief: "[[留房不留钱-GPS选房升级版 - Brief]]"
 ---

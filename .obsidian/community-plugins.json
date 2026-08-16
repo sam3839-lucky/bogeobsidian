@@ -1,16 +1,9 @@
 [
-  "wechat-converter",
-  "messager",
+  "content-production-dashboard",
+  "notehelper",
   "realclaudian",
-  "editing-toolbar",
-  "recent-files-obsidian",
-  "docxer",
-  "marker-api",
-  "xiaohongshu-importer",
-  "templater-obsidian",
   "dataview",
-  "wechat-obsync",
-  "advanced-canvas",
+  "docxer",
   "notebook-navigator",
-  "notehelper"
+  "recent-files-obsidian"
 ]
