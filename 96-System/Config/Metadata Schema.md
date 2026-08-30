@@ -1,4 +1,4 @@
-﻿# Metadata Schema（版本：2026-08-14-v2）
+﻿# Metadata Schema（版本：2026-08-18-v3）
 
 ## 目标
 
@@ -107,7 +107,7 @@
 - `project`：只有目标、成功标准和结束条件均明确时才能实例化；正文必须记录当前状态、已完成事项、待办、下一步、风险、阻塞与关键决策。
 - `prompt`：正文必须记录使用场景、输入要求、输出格式、推荐模型、版本、最后测试日期、测试样例、已知限制、失败案例、评价标准和变更记录；不得包含 Token、密码、Cookie、API Key 或私人数据。
 - `content-brief`：正文必须记录目标平台、目标受众、核心观点、证据来源、内容形式、当前状态、发布日期、发布链接、复用计划、表现数据与复盘结论。平台尚未正式填写时使用"待补充"，不新增平台目录或 YAML 枚举。
-- `content-task`：任务编排实体，负责流程阶段、revision 和平台编排。`current_stage` 独立使用 `inbox`、`idea`、`brief`、`viral_design`、`drafting`、`human_review`、`publishing`、`retrospective`、`archived`。关联资产通过 `source_ids` 和资产 ID 建立。仅在插件启用或需要多资产编排时实例化；当前人工流程不强制使用。
+- `content-task`：任务编排实体，负责流程阶段、revision 和平台编排。`current_stage` 独立使用 `inbox`、`idea`、`brief`、`viral_design`、`drafting`、`human_review`、`publishing`、`retrospective`、`archived`。关联资产通过 `source_ids` 和资产 ID 建立。由快速选题人工确认创建的任务必须使用 `current_stage: idea`，并写入 `topic_title`、`topic`、`topic_angle_type`、`topic_core_promise`、`topic_preview_sha256`；正文保存事实边界、风险、证据锚点、人工选择时间和生成模型。`topic_preview_sha256` 只证明候选快照一致，不证明事实正确。仅在插件启用或需要多资产编排时实例化；当前人工流程不强制使用。
 - `viral-design`：爆款设计工件，关联到 `content-brief`。正文必须包含 3 必过项（Hook 设计、标题备选、情绪曲线）和 4 可选项（或标注缺失原因）。
 - `script`：平台稿件，关联到 `content-brief` 和 `viral-design`。双平台分别使用 `platform` 字段标注（`video_channel` 或 `wechat_article`）。正文必须包含人设一致性检查和核验清单。
 - `topic-hub`：只有真实笔记达到导航需要时才实例化；本阶段不创建 Topic Hub。
